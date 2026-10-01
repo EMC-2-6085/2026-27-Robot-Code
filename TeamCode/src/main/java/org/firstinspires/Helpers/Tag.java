@@ -1,23 +1,21 @@
 package org.firstinspires.ftc.teamcode.Helpers;
 
-//all arrays are x,y,yaw/heading
+//all arrays are x,y
 public class Tag {
 
-    public double x, y, yaw;
-    public double[] tagPosition = new double[3];
+    public double x, y;
+    public double[] tagPosition = new double[2];
 
     public double[] getPosition() {
-        //returns array of x, y, yaw
+        //returns array of x, y
         return tagPosition;
     }
-    public void setPosition(double tagX, double tagY, double tagYaw) {
+    public void setPosition(double tagX, double tagY) {
         //sets the values of the tag, call whenever tag is seen
         x = tagX;
         y = tagY;
-        yaw = tagYaw;
 
-        tagPosition[1] = x;
-        tagPosition[2] = y;
-        tagPosition[3] = yaw;
+        tagPosition[0] = x;
+        tagPosition[1] = y;
     }
 }

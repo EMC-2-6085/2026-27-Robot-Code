@@ -32,4 +32,8 @@ public class Constants {
     public static final double TURN_SCALE = -0.8;
     public static final double TURN_D = -0.05;
   }
+
+  public static class shooterConstants {
+    public static final double SHOOT_DISTANCE = 2.0; //Meters temp
+  }
 }
