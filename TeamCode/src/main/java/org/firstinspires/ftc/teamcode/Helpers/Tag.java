@@ -2,7 +2,8 @@ package org.firstinspires.ftc.teamcode.Helpers;
 
 //all arrays are x,y
 public class Tag {
-
+    //TODO: add a variable for if the tag is seen
+    // add back checking z incase we see tags from a tipped hive
     public double x, y;
     public double[] tagPosition = new double[2];
 
