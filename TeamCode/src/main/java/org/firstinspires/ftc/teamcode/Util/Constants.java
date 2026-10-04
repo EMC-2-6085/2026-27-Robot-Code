@@ -35,5 +35,6 @@ public class Constants {
 
   public static class shooterConstants {
     public static final double SHOOT_DISTANCE = 2.0; //Meters temp
+    public static final double[] CAMERA_OFFSET = {6.9, 4.20}; //Meters from robot center to lens (x, y) temp
   }
 }
