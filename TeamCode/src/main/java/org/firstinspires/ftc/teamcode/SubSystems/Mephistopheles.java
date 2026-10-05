@@ -47,7 +47,7 @@ public class Mephistopheles {
         return angle;
     }
 
-    public boolean goToPosition(double targetX, double targetY, double targetHeading, int speedPct) {
+    public boolean goToPosition(double targetX, double targetY, double targetHeading, int speedPct, String motionType) {
 
         if (targetX != lastTargetX || targetY != lastTargetY) {
             targetStartTime = System.currentTimeMillis();
@@ -112,8 +112,12 @@ public class Mephistopheles {
         rightFrontPID.periodic();
         rightRearPID.periodic();
 
-        boolean positionReached = distance < 0.08;
-        boolean headingReached  = Math.abs(headingError) < 0.05;
+        boolean isRapid = "G00".equals(motionType);
+        double positionTolerance = isRapid ? 0.20 : 0.08;
+        double headingTolerance  = isRapid ? 0.15 : 0.05;
+
+        boolean positionReached = distance < positionTolerance;
+        boolean headingReached  = Math.abs(headingError) < headingTolerance;
 
         if (positionReached && headingReached) {
             lastTargetX = Double.NaN;
@@ -124,8 +128,12 @@ public class Mephistopheles {
         return false;
     }
 
+    public boolean goToPosition(double targetX, double targetY, double targetHeading, int speedPct) {
+        return goToPosition(targetX, targetY, targetHeading, speedPct, "G01");
+    }
+
     public boolean goToPosition(double targetX, double targetY, double targetHeading) {
-        return goToPosition(targetX, targetY, targetHeading, 100);
+        return goToPosition(targetX, targetY, targetHeading, 100, "G01");
     }
 
     public void resetPIDs() {
@@ -194,6 +202,7 @@ public class Mephistopheles {
             public double x, y, heading;
             public int speedPct = 100;
             public int mCode = -1;
+            public String motionType = "G01";
 
             public PathPoint(double x, double y, double heading) {
                 this.x = x;
@@ -201,18 +210,24 @@ public class Mephistopheles {
                 this.heading = heading;
             }
 
-            public PathPoint(double x, double y, double heading, int speedPct, int mCode) {
+            public PathPoint(double x, double y, double heading, int speedPct, int mCode, String motionType) {
                 this.x = x;
                 this.y = y;
                 this.heading = heading;
                 this.speedPct = speedPct;
                 this.mCode = mCode;
+                this.motionType = motionType != null ? motionType : "G01";
             }
         }
 
         public List<PathPoint> targets = new ArrayList<>();
         public double xOffset = 0.0;
         public double yOffset = 0.0;
+        
+        public boolean hasStartPoint = false;
+        public double startX = 0.0;
+        public double startY = 0.0;
+        public double startHeading = 0.0;
 
         public PathConfig(String fileName) {
             File file = new File("/sdcard/FIRST/MephiFiles/AutoPaths/" + fileName);
@@ -235,14 +250,37 @@ public class Mephistopheles {
                         continue;
                     }
 
+                    if (line.startsWith("; START:")) {
+                        String[] parts = line.substring(7).trim().split(":");
+                        if (parts.length >= 4) {
+                            startX = Double.parseDouble(parts[1].trim());
+                            startY = Double.parseDouble(parts[2].trim());
+                            startHeading = Math.toRadians(Double.parseDouble(parts[3].trim()));
+                            hasStartPoint = true;
+                        }
+                        continue;
+                    }
+
                     if (line.startsWith(";")) continue;
 
-                    if (line.startsWith("G1")) {
+                    if (line.startsWith("G")) {
                         String[] tokens = line.split("\\s+");
                         double x = 0.0, y = 0.0, heading = 0.0;
                         int speedPct = 100, mCode = -1;
+                        String motionType = "G01";
 
                         for (String token : tokens) {
+                            if (token.isEmpty()) continue;
+                            String upperToken = token.toUpperCase();
+                            
+                            if (upperToken.startsWith("G00") || upperToken.equals("G0")) {
+                                motionType = "G00";
+                                continue;
+                            } else if (upperToken.startsWith("G01") || upperToken.equals("G1")) {
+                                motionType = "G01";
+                                continue;
+                            }
+
                             if (token.length() < 2) continue;
                             char cmd = Character.toUpperCase(token.charAt(0));
                             String val = token.substring(1);
@@ -256,7 +294,7 @@ public class Mephistopheles {
                             }
                         }
 
-                        targets.add(new PathPoint(x, y, heading, speedPct, mCode));
+                        targets.add(new PathPoint(x, y, heading, speedPct, mCode, motionType));
                     }
                 }
             } catch (Exception e) {
@@ -277,13 +315,18 @@ public class Mephistopheles {
             this.mephi = mephi;
             this.loc = loc;
             this.config = config;
+
+            if (config.hasStartPoint) {
+                loc.setX(config.startX);
+                loc.setY(config.startY);
+            }
         }
 
         public boolean follow(){
             if(targetIndex >= config.targets.size()) return true;
 
             PathConfig.PathPoint target = config.targets.get(targetIndex);
-            boolean reached = mephi.goToPosition(target.x, target.y, target.heading, target.speedPct);
+            boolean reached = mephi.goToPosition(target.x, target.y, target.heading, target.speedPct, target.motionType);
 
             if(reached){
                 mephi.handleMCode(target.mCode);
