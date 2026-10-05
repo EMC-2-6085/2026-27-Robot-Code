@@ -2,9 +2,9 @@ package org.firstinspires.ftc.teamcode.Helpers;
 import org.firstinspires.ftc.teamcode.SubSystems.Localization;
 import org.firstinspires.ftc.teamcode.Util.Constants.shooterConstants;
 
-//all arrays are x, y or x, y, heading
+//all arrays are x, y, z or x, y, z, heading
 public class TagCluster {
-    public static double[] tag1, tag2, tag3, tag4 = new double[2];
+    public static double[] tag1, tag2, tag3, tag4 = new double[3];
     public static double[][] cluster = new double[][] {tag1, tag2. tag3, tag4};
     public static int offsetMultipler = 1;
 
