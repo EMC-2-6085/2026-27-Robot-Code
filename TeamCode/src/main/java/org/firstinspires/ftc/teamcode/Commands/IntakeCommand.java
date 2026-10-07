@@ -24,6 +24,11 @@ public class IntakeCommand {
             intake.stop();
         }
     }
+    
+    public void end() {
+        intake.stop();
+        intakeArm.armUp();
+    }
 
     public boolean isFinished() {
         return intakeArm.checkAcceptableError();

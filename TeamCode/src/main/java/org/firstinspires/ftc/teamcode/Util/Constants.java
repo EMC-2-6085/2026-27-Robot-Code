@@ -61,4 +61,14 @@ public class Constants {
     public static final double ACCEPTABLE_ERROR = 1.0; //RPM temp
     public static final double INTAKE_RPM = 312.0; //temp
   }
+
+  public static class indexerConstants {
+    public static final double ENCODER_CPR = 537.7; //temp
+    public static final double INDEXER_KP = 0.0032; //temp
+    public static final double INDEXER_KI = 0.0; //temp
+    public static final double INDEXER_KD = 0.0; //temp
+    public static final double INTEGRAL_LIMIT = 200.0; //temp
+    public static final double ACCEPTABLE_ERROR = 1.0; //RPM temp
+    public static final double INDEXER_RPM = 312.0; //temp
+  }
 }

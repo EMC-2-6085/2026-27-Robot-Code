@@ -12,6 +12,7 @@ public class Robot {
     public final Lights lights;
     public final IntakeArm intakeArm;
     public final Intake intake;
+    public final Indexer indexer;
     public final GlassWindow glassWindow;
 
     public final MotorPID posPIDLeftRear;
@@ -28,6 +29,7 @@ public class Robot {
         lights = new Lights(hardwareMap);
         intakeArm = new IntakeArm(hardwareMap);
         intake = new Intake(hardwareMap);
+        indexer = new Indexer(hardwareMap);
         glassWindow = new GlassWindow(hardwareMap, vision);
 
         double kP = Constants.driveTrainConstants.WHEEL_P;
