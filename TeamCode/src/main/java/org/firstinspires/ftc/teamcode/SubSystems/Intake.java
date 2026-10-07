@@ -23,11 +23,11 @@ public class Intake {
         );
     }
 
-    public void spinForward() {
+    public void intake() {
         setTargetRPM(intakeConstants.INTAKE_RPM);
     }
 
-    public void spinBackward() {
+    public void outtake() {
         setTargetRPM(-intakeConstants.INTAKE_RPM);
     }
 
