@@ -39,17 +39,17 @@ public class Main extends LinearOpMode {
         IntakeCommand raiseCommand = new IntakeCommand(
             robot.intakeArm, 
             robot.intake, 
-            intakeArmConstants.ArmUpRadians
+            intakeArmConstants.ARM_UP_RADIANS
         );
         IntakeCommand lowerCommand = new IntakeCommand(
             robot.intakeArm, 
             robot.intake, 
-            intakeArmConstants.ArmDownRadians
+            intakeArmConstants.ARM_DOWN_RADIANS
         );
         IntakeCommand inCommand = new IntakeCommand(
             robot.intakeArm, 
             robot.intake, 
-            intakeArmConstants.ArmInRadians
+            intakeArmConstants.ARM_IN_RADIANS
         );
 
         waitForStart();
@@ -104,6 +104,8 @@ public class Main extends LinearOpMode {
                 telemetry.addData("X (m)", robot.local.getX());
                 telemetry.addData("Y (m)", robot.local.getY());
                 telemetry.addData("Heading (rad)", currentHeading);
+                telemetry.addData("Arm Power Output", robot.intakeArm.intakeArmPID.getPower());
+                telemetry.addData("Arm Error", robot.intakeArm.intakeArmPID.getError());
                 telemetry.update();
 
                 glassWindow.addDouble("Robot/X", robot.local.getX());

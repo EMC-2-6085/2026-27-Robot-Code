@@ -11,7 +11,7 @@ public class Constants {
     public static final double HEADING_P = 0.02;
     
     public static final double INTERGRAL_LIMIT = 200.0;
-    public static final double ACCEPTABLE_ERROR = 1; //Encoder ticks
+    public static final double ACCEPTABLE_ERROR = 1.0; //Encoder ticks
   }
 
   public static class localizationConstants {
@@ -39,26 +39,26 @@ public class Constants {
   }
 
   public static class intakeArmConstants {
-    public static final double ARM_KP = 0.0; //temp
-    public static final double ARM_KI = 0.0; //temp
-    public static final double ARM_KD = 0.0; //temp
-    public static final double INTEGRAL_LIMIT = 1.0; //temp
+    public static final double ARM_KP = 0.0065; //temp
+    public static final double ARM_KI = 0.0001; //temp
+    public static final double ARM_KD = 0.0001125; //temp
+    public static final double INTEGRAL_LIMIT = 200.0; //temp
 
-    public static final double ARM_UP_RADIANS = 6.9; //temp
-    public static final double ARM_DOWN_RADIANS = 0.0; //temp
-    public static final double ARM_IN_RADIANS = 0.0; //temp
-    public static final double ACCEPTABLE_ERROR = 0.0; //temp
+    public static final double ARM_UP_RADIANS = 0; //temp
+    public static final double ARM_DOWN_RADIANS = 1.570795; //temp
+    public static final double ARM_IN_RADIANS = 3.14159; //temp
+    public static final double ACCEPTABLE_ERROR = 1.0; //temp
 
-    public static final double RADIANS_TO_TICKS = 1.0; //temp
+    public static final double RADIANS_TO_TICKS = 171.16; //temp
   }
 
   public static class intakeConstants {
-    public static final double ENCODER_CPR = 0.0; //temp
-    public static final double INTAKE_KP = 0.0; //temp
+    public static final double ENCODER_CPR = 537.7; //temp
+    public static final double INTAKE_KP = 0.0032; //temp
     public static final double INTAKE_KI = 0.0; //temp
     public static final double INTAKE_KD = 0.0; //temp
-    public static final double INTEGRAL_LIMIT = 0.0; //temp
-    public static final double ACCEPTABLE_ERROR = 0.0; //RPM temp
-    public static final double INTAKE_RPM = 0.0; //temp
+    public static final double INTEGRAL_LIMIT = 200.0; //temp
+    public static final double ACCEPTABLE_ERROR = 1.0; //RPM temp
+    public static final double INTAKE_RPM = 312.0; //temp
   }
 }
