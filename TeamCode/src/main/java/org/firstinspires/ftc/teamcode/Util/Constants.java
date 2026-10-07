@@ -37,4 +37,28 @@ public class Constants {
     public static final double SHOOT_DISTANCE = 2.0; //Meters temp
     public static final double[] CAMERA_OFFSET = {6.9, 4.20}; //Meters from robot center to lens (x, y) temp
   }
+
+  public static class intakeArmConstants {
+    public static final double ARM_KP = 0.0; //temp
+    public static final double ARM_KI = 0.0; //temp
+    public static final double ARM_KD = 0.0; //temp
+    public static final double INTEGRAL_LIMIT = 1.0; //temp
+
+    public static final double ARM_UP_RADIANS = 6.9; //temp
+    public static final double ARM_DOWN_RADIANS = 0.0; //temp
+    public static final double ARM_IN_RADIANS = 0.0; //temp
+    public static final double ACCEPTABLE_ERROR = 0.0; //temp
+
+    public static final double RADIANS_TO_TICKS = 1.0; //temp
+  }
+
+  public static class intakeConstants {
+    public static final double ENCODER_CPR = 0.0; //temp
+    public static final double INTAKE_KP = 0.0; //temp
+    public static final double INTAKE_KI = 0.0; //temp
+    public static final double INTAKE_KD = 0.0; //temp
+    public static final double INTEGRAL_LIMIT = 0.0; //temp
+    public static final double ACCEPTABLE_ERROR = 0.0; //RPM temp
+    public static final double INTAKE_RPM = 0.0; //temp
+  }
 }

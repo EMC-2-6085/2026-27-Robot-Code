@@ -10,6 +10,8 @@ public class Robot {
     public final Vision vision;        
     public final Localization local;   
     public final Lights lights;
+    public final IntakeArm intakeArm;
+    public final Intake intake;
     public final GlassWindow glassWindow;
 
     public final MotorPID posPIDLeftRear;
@@ -21,13 +23,11 @@ public class Robot {
 
     public Robot(HardwareMap hardwareMap) {
         drive = new Drivetrain(hardwareMap);
-
         vision = new Vision(hardwareMap);
-
         local = new Localization(hardwareMap, vision);
-        
         lights = new Lights(hardwareMap);
-
+        intakeArm = new IntakeArm(hardwareMap);
+        intake = new Intake(hardwareMap);
         glassWindow = new GlassWindow(hardwareMap, vision);
 
         double kP = Constants.driveTrainConstants.WHEEL_P;
