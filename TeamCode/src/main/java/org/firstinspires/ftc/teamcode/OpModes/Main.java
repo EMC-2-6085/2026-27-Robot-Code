@@ -8,6 +8,8 @@ import org.firstinspires.ftc.teamcode.SubSystems.GlassWindow;
 import org.firstinspires.ftc.teamcode.Util.Constants.driveTrainConstants;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.teamcode.Commands.IntakeCommand;
+import org.firstinspires.ftc.teamcode.Commands.ForwardIndexCommand;
+import org.firstinspires.ftc.teamcode.Commands.BackwardIndexCommand;
 import org.firstinspires.ftc.teamcode.Util.Constants.intakeArmConstants;
 import java.util.List;
 
@@ -52,6 +54,9 @@ public class Main extends LinearOpMode {
             intakeArmConstants.ARM_IN_RADIANS
         );
 
+        ForwardIndexCommand forwardIndexCommand = new ForwardIndexCommand(robot.indexer);
+        BackwardIndexCommand backwardIndexCommand = new BackwardIndexCommand(robot.indexer);
+
         waitForStart();
 
         try {
@@ -59,6 +64,8 @@ public class Main extends LinearOpMode {
                 robot.local.periodic();
                 robot.intake.periodic();
                 robot.intakeArm.periodic();
+                robot.indexer.periodic();
+                robot.shooter.periodic();
 
                 currentHeading = robot.local.getHeading();
                 double turn = gamepad1.right_stick_x;

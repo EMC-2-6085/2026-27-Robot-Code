@@ -33,11 +33,6 @@ public class Constants {
     public static final double TURN_D = -0.05;
   }
 
-  public static class shooterConstants {
-    public static final double SHOOT_DISTANCE = 2.0; //Meters temp
-    public static final double[] CAMERA_OFFSET = {6.9, 4.20}; //Meters from robot center to lens (x, y) temp
-  }
-
   public static class intakeArmConstants {
     public static final double ARM_KP = 0.0065; //temp
     public static final double ARM_KI = 0.0001; //temp
@@ -70,5 +65,18 @@ public class Constants {
     public static final double INTEGRAL_LIMIT = 200.0; //temp
     public static final double ACCEPTABLE_ERROR = 1.0; //RPM temp
     public static final double INDEXER_RPM = 312.0; //temp
+  }
+
+  public static class shooterConstants {
+    public static final double SHOOT_DISTANCE = 2.0; //Meters temp
+    public static final double[] CAMERA_OFFSET = {6.9, 4.20}; //Meters from robot center to lens (x, y) temp
+    public static final double ENCODER_CPR = 537.7; //temp
+    public static final double SHOOTER_KP = 0.0032; //temp
+    public static final double SHOOTER_KI = 0.0; //temp
+    public static final double SHOOTER_KD = 0.0; //temp
+    public static final double INTEGRAL_LIMIT = 200.0; //temp
+    public static final double ACCEPTABLE_ERROR = 1.0; //RPM temp
+    public static final double SHOOTER_RPM = 6000.0; //temp
+    public static final double UNLOAD_RPM = -500.0; //temp
   }
 }
