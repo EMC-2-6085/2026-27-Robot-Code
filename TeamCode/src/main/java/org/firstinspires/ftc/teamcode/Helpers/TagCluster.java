@@ -4,16 +4,39 @@ import org.firstinspires.ftc.teamcode.Util.Constants.shooterConstants;
 
 //all arrays are x, y, z or x, y, z, heading
 public class TagCluster {
-    public static double[] tag1, tag2, tag3, tag4 = new double[3];
-    public static double[][] cluster = new double[][] {tag1, tag2. tag3, tag4};
-    public static int offsetMultipler = 1;
+    public double[] tag1 = new double[3];
+    public double[] tag2 = new double[3];
+    public double[] tag3 = new double[3];
+    public double[] tag4 = new double[3];
+    public double[][] cluster = new double[][] {tag1, tag2, tag3, tag4};
+    public int offsetMultipler = 1;
 
-    public static void setCluster(double[] newTag1, double[] newTag2, double[] newTag3, double[] newTag4) {
+    public TagCluster(int multiplier) {
+        this.offsetMultiplier = multiplier;
+    }
+
+    public void setCluster(double[] newTag1, double[] newTag2, double[] newTag3, double[] newTag4) {
         //needed to set values of everything in the cluster
-        cluster[0] = newTag1;
-        cluster[1] = newTag2;
-        cluster[2] = newTag3;
-        cluster[3] = newTag4;
+        if (newTag1 != null) tag1 = newTag1;
+        if (newTag2 != null) tag2 = newTag2;
+        if (newTag3 != null) tag3 = newTag3;
+        if (newTag4 != null) tag4 = newTag4;
+
+        cluster[0] = tag1;
+        cluster[1] = tag2;
+        cluster[2] = tag3;
+        cluster[3] = tag4;
+    }
+
+    public void clearCluster() {
+        tag1 = new double[3];
+        tag2 = new double[3];
+        tag3 = new double[3];
+        tag4 = new double[3];
+        cluster[0] = tag1;
+        cluster[1] = tag2;
+        cluster[2] = tag3;
+        cluster[3] = tag4;
     }
 
     public double[][] getCluster() {

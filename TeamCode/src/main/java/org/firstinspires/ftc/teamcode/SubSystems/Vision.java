@@ -3,8 +3,9 @@ package org.firstinspires.ftc.teamcode.SubSystems;
 import android.graphics.Bitmap;
 import android.util.Base64;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import org.firstinspires.ftc.teamcode.Util.Constants;
 import org.firstinspires.ftc.teamcode.Util.Constants.localizationConstants;
+import org.firstinspires.ftc.teamcode.Util.Constants.visionConstants;
+import org.firstinspires.ftc.teamcode.Helpers.TagCluster;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
@@ -20,20 +21,18 @@ import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class Vision {
 
-    public static class CameraConfig {
-        public final double offsetX;        
-        public final double offsetY;        
-        public final double offsetHeading;  
-
-        public CameraConfig(double offsetX, double offsetY, double offsetHeading) {
-            this.offsetX = offsetX;
-            this.offsetY = offsetY;
-            this.offsetHeading = offsetHeading;
-        }
+    public enum HiveCluster {
+        NONE,
+        RED_AUDIENCE,
+        RED_BACKSIDE,
+        BLUE_AUDIENCE,
+        BLUE_BACKSIDE
     }
 
     private final HardwareMap hardwareMap;
@@ -46,20 +45,17 @@ public class Vision {
     private final FrameEncoderProcessor frameEncoder1;
     private final FrameEncoderProcessor frameEncoder2;
 
-    private volatile double camX = 0.0;
-    private volatile double camY = 0.0;
-    private volatile double camHeading = 0.0;
-
     private volatile int latestTagId = 0;
-    private volatile double latestRawX = 0.0;
-    private volatile double latestRawY = 0.0;
-    private volatile double latestRawZ = 0.0;
+    private volatile boolean latestIsUpsideDown = false;
+    private volatile HiveCluster activeHiveCluster = HiveCluster.NONE;
     
     private final Object detectionsLock = new Object();
     private final List<AprilTagDetection> activeDetections = new ArrayList<>();
 
-    private final CameraConfig camera1Config = new CameraConfig(-1.0 * 0.0254, -7.5 * 0.0254, -Math.PI / 2.0); // Webcam 1: Right Side
-    private final CameraConfig camera2Config = new CameraConfig(-1.0 * 0.0254,  7.5 * 0.0254,  Math.PI / 2.0); // Webcam 2: Left Side
+    public final TagCluster redAudienceCluster = new TagCluster(1);
+    public final TagCluster redBacksideCluster = new TagCluster(1);
+    public final TagCluster blueAudienceCluster = new TagCluster(-1);
+    public final TagCluster blueBacksideCluster = new TagCluster(-1);
 
     public Vision(HardwareMap hardwareMap) {
         this.hardwareMap = hardwareMap;
@@ -70,13 +66,17 @@ public class Vision {
 
     private void initVision() {
         try {
-            AprilTagMetadata customTag1 = new AprilTagMetadata(1, "Tag 1", 0.16986, DistanceUnit.METER);
-            AprilTagMetadata customTag2 = new AprilTagMetadata(2, "Tag 2", 0.16986, DistanceUnit.METER);
-            AprilTagMetadata customTag3 = new AprilTagMetadata(3, "Tag 3", 0.16986, DistanceUnit.METER);
-            AprilTagMetadata customTag4 = new AprilTagMetadata(4, "Tag 4", 0.16986, DistanceUnit.METER);
-            
-            AprilTagLibrary customLibrary = new AprilTagLibrary.Builder()
-                .addTag(customTag1).addTag(customTag2).addTag(customTag3).addTag(customTag4).build();
+            Set<Integer> uniqueTagIds = new HashSet<>();
+            for (int id : visionConstants.RED_AUDIENCE_TAGS) uniqueTagIds.add(id);
+            for (int id : visionConstants.RED_BACKSIDE_TAGS) uniqueTagIds.add(id);
+            for (int id : visionConstants.BLUE_AUDIENCE_TAGS) uniqueTagIds.add(id);
+            for (int id : visionConstants.BLUE_BACKSIDE_TAGS) uniqueTagIds.add(id);
+
+            AprilTagLibrary.Builder libraryBuilder = new AprilTagLibrary.Builder();
+            for (int id : uniqueTagIds) {
+                libraryBuilder.addTag(new AprilTagMetadata(id, "Tag " + id, 0.16986, DistanceUnit.METER));
+            }
+            AprilTagLibrary customLibrary = libraryBuilder.build();
 
             aprilTagProcessor1 = new AprilTagProcessor.Builder()
                     .setTagFamily(AprilTagProcessor.TagFamily.TAG_36h11)
@@ -113,7 +113,6 @@ public class Vision {
                         .addProcessor(frameEncoder2)
                         .build();
             }
-                
         } catch (Exception e) {}
     }
 
@@ -127,94 +126,103 @@ public class Vision {
             if (detections2 != null) activeDetections.addAll(detections2);
         }
 
+        redAudienceCluster.clearCluster();
+        redBacksideCluster.clearCluster();
+        blueAudienceCluster.clearCluster();
+        blueBacksideCluster.clearCluster();
+
+        double[][] redAudTags = new double[4][3];
+        double[][] redBackTags = new double[4][3];
+        double[][] blueAudTags = new double[4][3];
+        double[][] blueBackTags = new double[4][3];
+
         AprilTagDetection bestDetection = null;
-        CameraConfig bestConfig = null;
         double closestDistance = Double.MAX_VALUE;
+        HiveCluster detectedCluster = HiveCluster.NONE;
 
-        if (detections1 != null) {
-            for (AprilTagDetection detection : detections1) {
-                if (detection.ftcPose != null && detection.ftcPose.range < closestDistance) {
-                    closestDistance = detection.ftcPose.range;
-                    bestDetection = detection;
-                    bestConfig = camera1Config;
-                }
+        for (AprilTagDetection detection : activeDetections) {
+            if (detection.ftcPose == null) continue;
+
+            if (detection.ftcPose.range < closestDistance) {
+                closestDistance = detection.ftcPose.range;
+                bestDetection = detection;
+            }
+
+            double[] poseData = new double[] { detection.ftcPose.x, detection.ftcPose.y, detection.ftcPose.z };
+            int id = detection.id;
+
+            int idx = getIndexInArray(visionConstants.RED_AUDIENCE_TAGS, id);
+            if (idx != -1) {
+                redAudTags[idx] = poseData;
+                detectedCluster = HiveCluster.RED_AUDIENCE;
+            }
+
+            idx = getIndexInArray(visionConstants.RED_BACKSIDE_TAGS, id);
+            if (idx != -1) {
+                redBackTags[idx] = poseData;
+                detectedCluster = HiveCluster.RED_BACKSIDE;
+            }
+
+            idx = getIndexInArray(visionConstants.BLUE_AUDIENCE_TAGS, id);
+            if (idx != -1) {
+                blueAudTags[idx] = poseData;
+                detectedCluster = HiveCluster.BLUE_AUDIENCE;
+            }
+
+            idx = getIndexInArray(visionConstants.BLUE_BACKSIDE_TAGS, id);
+            if (idx != -1) {
+                blueBackTags[idx] = poseData;
+                detectedCluster = HiveCluster.BLUE_BACKSIDE;
             }
         }
 
-        if (detections2 != null) {
-            for (AprilTagDetection detection : detections2) {
-                if (detection.ftcPose != null && detection.ftcPose.range < closestDistance) {
-                    closestDistance = detection.ftcPose.range;
-                    bestDetection = detection;
-                    bestConfig = camera2Config;
-                }
-            }
-        }
+        redAudienceCluster.setCluster(redAudTags[0], redAudTags[1], redAudTags[2], redAudTags[3]);
+        redBacksideCluster.setCluster(redBackTags[0], redBackTags[1], redBackTags[2], redBackTags[3]);
+        blueAudienceCluster.setCluster(blueAudTags[0], blueAudTags[1], blueAudTags[2], blueAudTags[3]);
+        blueBacksideCluster.setCluster(blueBackTags[0], blueBackTags[1], blueBackTags[2], blueBackTags[3]);
+
+        this.activeHiveCluster = detectedCluster;
 
         if (bestDetection != null) {
             this.latestTagId = bestDetection.id;
-            this.latestRawX = detectionPoseX(bestDetection);
-            this.latestRawY = detectionPoseY(bestDetection);
-            this.latestRawZ = detectionPoseZ(bestDetection);
-
-            computePose(bestDetection, bestConfig);
+            double roll = bestDetection.ftcPose.roll;
+            double pitch = bestDetection.ftcPose.pitch;
+            this.latestIsUpsideDown = (Math.abs(roll) > Math.PI / 2.0 || Math.abs(pitch) > Math.PI / 2.0);
         } else {
             this.latestTagId = 0; 
+            this.latestIsUpsideDown = false;
         }
     }
 
-    private double detectionPoseX(AprilTagDetection d) { return d.ftcPose != null ? d.ftcPose.x : 0.0; }
-    private double detectionPoseY(AprilTagDetection d) { return d.ftcPose != null ? d.ftcPose.y : 0.0; }
-    private double detectionPoseZ(AprilTagDetection d) { return d.ftcPose != null ? d.ftcPose.z : 0.0; }
-
-    private void computePose(AprilTagDetection detection, CameraConfig cam) {
-        double tagFieldX = 0.0;
-        double tagFieldY = 0.0;
-        double tagOrientation = 0.0;
-
-        switch (detection.id) {
-            case 1: 
-                tagFieldX = 3.66; tagFieldY = 1.83; tagOrientation = Math.PI;
-                break;
-            case 2: 
-                tagFieldX = 1.83; tagFieldY = 0.0; tagOrientation = Math.PI / 2.0;
-                break;
-            case 3: 
-                tagFieldX = 0.0;  tagFieldY = 1.83; tagOrientation = 0.0;
-                break;
-            case 4: 
-                tagFieldX = 1.83; tagFieldY = 3.66; tagOrientation = -Math.PI / 2.0;
-                break;
-            default: return; 
-        }
-
-        double rangeMeters = detection.ftcPose.range; 
-        double bearingRad = detection.ftcPose.bearing;
-        double yawRad = detection.ftcPose.yaw;
-
-        double alpha = tagOrientation + Math.PI - yawRad;
-
-        double globalRobotHeading = AngleUnit.RADIANS.normalize(alpha - bearingRad - cam.offsetHeading);
-        this.camHeading = globalRobotHeading;
-
-        double globalCamX = tagFieldX - (rangeMeters * Math.cos(alpha));
-        double globalCamY = tagFieldY - (rangeMeters * Math.sin(alpha));
-
-        double fieldOffsetX = (cam.offsetX * Math.cos(globalRobotHeading)) - (cam.offsetY * Math.sin(globalRobotHeading));
-        double fieldOffsetY = (cam.offsetX * Math.sin(globalRobotHeading)) + (cam.offsetY * Math.cos(globalRobotHeading));
-
-        this.camX = globalCamX - fieldOffsetX;
-        this.camY = globalCamY - fieldOffsetY;
+    public HiveCluster getActiveCluster() {
+        return this.activeHiveCluster;
     }
 
-    public double getCamX() { return this.camX; }
-    public double getCamY() { return this.camY; }
-    public double getCamHeading() { return this.camHeading; }
+    public double[] getActiveTargetPosition(Localization localization) {
+        switch (activeHiveCluster) {
+            case RED_AUDIENCE:
+                return redAudienceCluster.getTargetPosition(localization);
+            case RED_BACKSIDE:
+                return redBacksideCluster.getTargetPosition(localization);
+            case BLUE_AUDIENCE:
+                return blueAudienceCluster.getTargetPosition(localization);
+            case BLUE_BACKSIDE:
+                return blueBacksideCluster.getTargetPosition(localization);
+            default:
+                return null;
+        }
+    }
+
+    private int getIndexInArray(int[] array, int targetId) {
+        if (array == null) return -1;
+        for (int i = 0; i < array.length; i++) {
+            if (array[i] == targetId) return i;
+        }
+        return -1;
+    }
 
     public int getLatestTagId() { return this.latestTagId; }
-    public double getLatestRawX() { return this.latestRawX; }
-    public double getLatestRawY() { return this.latestRawY; }
-    public double getLatestRawZ() { return this.latestRawZ; }
+    public boolean isLatestTagUpsideDown() { return this.latestIsUpsideDown; }
     
     public List<AprilTagDetection> getCamDetections() {
         synchronized (detectionsLock) {

@@ -79,4 +79,11 @@ public class Constants {
     public static final double SHOOTER_RPM = 6000.0; //temp
     public static final double UNLOAD_RPM = -500.0; //temp
   }
+
+  public static class visionConstants {
+    public static final int[] RED_AUDIENCE_TAGS   = {34, 35, 36, 37};
+    public static final int[] RED_BACKSIDE_TAGS   = {38, 39, 40, 41};
+    public static final int[] BLUE_AUDIENCE_TAGS  = {38, 39, 40, 41};
+    public static final int[] BLUE_BACKSIDE_TAGS  = {42, 43, 44, 45};
+}
 }
