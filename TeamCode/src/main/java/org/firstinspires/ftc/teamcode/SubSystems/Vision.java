@@ -49,6 +49,10 @@ public class Vision {
     private volatile boolean latestIsUpsideDown = false;
     private volatile HiveCluster activeHiveCluster = HiveCluster.NONE;
     
+    private double latestCamX = 0.0;
+    private double latestCamY = 0.0;
+    private double latestCamHeading = 0.0;
+    
     private final Object detectionsLock = new Object();
     private final List<AprilTagDetection> activeDetections = new ArrayList<>();
 
@@ -74,7 +78,8 @@ public class Vision {
 
             AprilTagLibrary.Builder libraryBuilder = new AprilTagLibrary.Builder();
             for (int id : uniqueTagIds) {
-                libraryBuilder.addTag(new AprilTagMetadata(id, "Tag " + id, 0.16986, DistanceUnit.METER));
+                // 3.25 inches = 0.08255 meters
+                libraryBuilder.addTag(new AprilTagMetadata(id, "Tag " + id, 0.08255, DistanceUnit.METER));
             }
             AprilTagLibrary customLibrary = libraryBuilder.build();
 
@@ -141,6 +146,20 @@ public class Vision {
         HiveCluster detectedCluster = HiveCluster.NONE;
 
         for (AprilTagDetection detection : activeDetections) {
+            int id = detection.id;
+
+            int idx = getIndexInArray(visionConstants.RED_AUDIENCE_TAGS, id);
+            if (idx != -1) detectedCluster = HiveCluster.RED_AUDIENCE;
+
+            idx = getIndexInArray(visionConstants.RED_BACKSIDE_TAGS, id);
+            if (idx != -1) detectedCluster = HiveCluster.RED_BACKSIDE;
+
+            idx = getIndexInArray(visionConstants.BLUE_AUDIENCE_TAGS, id);
+            if (idx != -1) detectedCluster = HiveCluster.BLUE_AUDIENCE;
+
+            idx = getIndexInArray(visionConstants.BLUE_BACKSIDE_TAGS, id);
+            if (idx != -1) detectedCluster = HiveCluster.BLUE_BACKSIDE;
+
             if (detection.ftcPose == null) continue;
 
             if (detection.ftcPose.range < closestDistance) {
@@ -149,31 +168,18 @@ public class Vision {
             }
 
             double[] poseData = new double[] { detection.ftcPose.x, detection.ftcPose.y, detection.ftcPose.z };
-            int id = detection.id;
 
-            int idx = getIndexInArray(visionConstants.RED_AUDIENCE_TAGS, id);
-            if (idx != -1) {
-                redAudTags[idx] = poseData;
-                detectedCluster = HiveCluster.RED_AUDIENCE;
-            }
+            idx = getIndexInArray(visionConstants.RED_AUDIENCE_TAGS, id);
+            if (idx != -1) redAudTags[idx] = poseData;
 
             idx = getIndexInArray(visionConstants.RED_BACKSIDE_TAGS, id);
-            if (idx != -1) {
-                redBackTags[idx] = poseData;
-                detectedCluster = HiveCluster.RED_BACKSIDE;
-            }
+            if (idx != -1) redBackTags[idx] = poseData;
 
             idx = getIndexInArray(visionConstants.BLUE_AUDIENCE_TAGS, id);
-            if (idx != -1) {
-                blueAudTags[idx] = poseData;
-                detectedCluster = HiveCluster.BLUE_AUDIENCE;
-            }
+            if (idx != -1) blueAudTags[idx] = poseData;
 
             idx = getIndexInArray(visionConstants.BLUE_BACKSIDE_TAGS, id);
-            if (idx != -1) {
-                blueBackTags[idx] = poseData;
-                detectedCluster = HiveCluster.BLUE_BACKSIDE;
-            }
+            if (idx != -1) blueBackTags[idx] = poseData;
         }
 
         redAudienceCluster.setCluster(redAudTags[0], redAudTags[1], redAudTags[2], redAudTags[3]);
@@ -185,11 +191,23 @@ public class Vision {
 
         if (bestDetection != null) {
             this.latestTagId = bestDetection.id;
+            this.latestCamX = bestDetection.ftcPose.x;
+            this.latestCamY = bestDetection.ftcPose.y;
+            this.latestCamHeading = bestDetection.ftcPose.yaw;
             double roll = bestDetection.ftcPose.roll;
             double pitch = bestDetection.ftcPose.pitch;
             this.latestIsUpsideDown = (Math.abs(roll) > Math.PI / 2.0 || Math.abs(pitch) > Math.PI / 2.0);
+        } else if (!activeDetections.isEmpty()) {
+            this.latestTagId = activeDetections.get(0).id;
+            this.latestCamX = 0.0;
+            this.latestCamY = 0.0;
+            this.latestCamHeading = 0.0;
+            this.latestIsUpsideDown = false;
         } else {
             this.latestTagId = 0; 
+            this.latestCamX = 0.0;
+            this.latestCamY = 0.0;
+            this.latestCamHeading = 0.0;
             this.latestIsUpsideDown = false;
         }
     }
@@ -212,6 +230,10 @@ public class Vision {
                 return null;
         }
     }
+
+    public double getCamX() { return this.latestCamX; }
+    public double getCamY() { return this.latestCamY; }
+    public double getCamHeading() { return this.latestCamHeading; }
 
     private int getIndexInArray(int[] array, int targetId) {
         if (array == null) return -1;

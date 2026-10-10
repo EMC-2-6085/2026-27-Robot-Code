@@ -12,7 +12,7 @@ public class TagCluster {
     public int offsetMultipler = 1;
 
     public TagCluster(int multiplier) {
-        this.offsetMultiplier = multiplier;
+        this.offsetMultipler = multiplier;
     }
 
     public void setCluster(double[] newTag1, double[] newTag2, double[] newTag3, double[] newTag4) {

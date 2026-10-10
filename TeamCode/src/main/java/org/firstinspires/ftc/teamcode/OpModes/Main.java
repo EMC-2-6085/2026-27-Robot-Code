@@ -8,8 +8,7 @@ import org.firstinspires.ftc.teamcode.SubSystems.GlassWindow;
 import org.firstinspires.ftc.teamcode.Util.Constants.driveTrainConstants;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.teamcode.Commands.IntakeCommand;
-import org.firstinspires.ftc.teamcode.Commands.ForwardIndexCommand;
-import org.firstinspires.ftc.teamcode.Commands.BackwardIndexCommand;
+import org.firstinspires.ftc.teamcode.Commands.ShootCommand;
 import org.firstinspires.ftc.teamcode.Util.Constants.intakeArmConstants;
 import java.util.List;
 
@@ -53,10 +52,17 @@ public class Main extends LinearOpMode {
             robot.intake, 
             intakeArmConstants.ARM_IN_RADIANS
         );
-
-        ForwardIndexCommand forwardIndexCommand = new ForwardIndexCommand(robot.indexer);
-        BackwardIndexCommand backwardIndexCommand = new BackwardIndexCommand(robot.indexer);
-
+        
+        ShootCommand shootCommand = new ShootCommand(
+            robot.mephi, 
+            robot.vision, 
+            robot.local, 
+            robot.shooter, 
+            80
+        );
+        
+        boolean isShooting = false;
+        
         waitForStart();
 
         try {
@@ -64,8 +70,7 @@ public class Main extends LinearOpMode {
                 robot.local.periodic();
                 robot.intake.periodic();
                 robot.intakeArm.periodic();
-                robot.indexer.periodic();
-                robot.shooter.periodic();
+                robot.vision.update();
 
                 currentHeading = robot.local.getHeading();
                 double turn = gamepad1.right_stick_x;
@@ -99,20 +104,43 @@ public class Main extends LinearOpMode {
                     robot.local.resetGyro();
                 }
 
-                if (gamepad2.rightBumperWasPressed()) { //rightBumperWasPressed() might not exist
+                if (gamepad2.rightBumperWasPressed()) {
                     raiseCommand.execute();
-                } else if (gamepad2.rightTriggerWasPressed()) { //rightTriggerWasPressed() might not exist
+                } else if (gamepad2.rightTriggerWasPressed()) {
                     lowerCommand.execute();
                 } else if (gamepad2.yWasPressed()) {
                     inCommand.execute();
                 }
-
+                
+                if (gamepad2.leftBumperWasPressed()) {
+                    shootCommand.end();
+                    isShooting = true;
+                }
+                
+                if (isShooting) {
+                    shootCommand.execute();
+                    if (shootCommand.isFinished()) {
+                        isShooting = false;
+                    }
+                }
+                
                 telemetry.addData("Movement", moveField ? "Field" : "Robot");
                 telemetry.addData("X (m)", robot.local.getX());
                 telemetry.addData("Y (m)", robot.local.getY());
                 telemetry.addData("Heading (rad)", currentHeading);
-                telemetry.addData("Arm Power Output", robot.intakeArm.intakeArmPID.getPower());
-                telemetry.addData("Arm Error", robot.intakeArm.intakeArmPID.getError());
+                telemetry.addData("Active Cluster", robot.vision.getActiveCluster());
+                telemetry.addData("Latest Tag ID", robot.vision.getLatestTagId());
+                telemetry.addData("Raw Detections Count", robot.vision.getCamDetections().size());
+                telemetry.addData("Latest Raw Tag ID", robot.vision.getLatestTagId());
+                double[] targetPose = robot.vision.getActiveTargetPosition(robot.local);
+                
+                if (targetPose != null) {
+                    telemetry.addData("Target X (m)", targetPose[0]);
+                    telemetry.addData("Target Y (m)", targetPose[1]);
+                    telemetry.addData("Target Heading (rad)", targetPose[2]);
+                } else {
+                    telemetry.addData("Target Position", "No active hive cluster in view");
+                }
                 telemetry.update();
 
                 glassWindow.addDouble("Robot/X", robot.local.getX());
