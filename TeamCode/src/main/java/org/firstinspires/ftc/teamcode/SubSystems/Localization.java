@@ -91,45 +91,23 @@ public class Localization {
 
     public void periodic() {
         updateIMU();
-
+    
         double stepForward = 0.0;
         double stepStrafe = 0.0;
-        double totalRelativeWeight = 0.0;
-
+    
         if (useEncoders) {
             updateEncoders();
-            stepForward += forwardDelta * encoderWeight;
-            stepStrafe += strafeDelta * encoderWeight;
-            totalRelativeWeight += encoderWeight;
+            stepForward = forwardDelta;
+            stepStrafe = strafeDelta;
         }
-
-        if (totalRelativeWeight > 0) {
-            stepForward /= totalRelativeWeight;
-            stepStrafe /= totalRelativeWeight;
-        }
-
+    
         double sin = Math.sin(heading);
         double cos = Math.cos(heading);
-        double deltaX = stepForward * sin + stepStrafe * cos; 
-        double deltaY = stepForward * cos - stepStrafe * sin; 
-
-        boolean visionLockedOut = (System.currentTimeMillis() - resetTimestamp) < VISION_LOCKOUT_MS;
-
-        if (useVision && !visionLockedOut && vision.getCamDetections().size() > 0) { 
-            double camPoseX = vision.getCamX();
-            double camPoseY = vision.getCamY();
-
-            double relativeWeightSum = (useEncoders ? encoderWeight : 0);
-            double totalWeight = relativeWeightSum + cameraWeight;
-
-            if (totalWeight > 0) {
-                this.x = ((relativeWeightSum * (this.x + deltaX)) + (cameraWeight * camPoseX)) / totalWeight;
-                this.y = ((relativeWeightSum * (this.y + deltaY)) + (cameraWeight * camPoseY)) / totalWeight;
-            }
-        } else {
-            this.x += deltaX;
-            this.y += deltaY;
-        }
+        double deltaX = stepForward * sin + stepStrafe * cos;  
+        double deltaY = stepForward * cos - stepStrafe * sin;  
+    
+        this.x += deltaX;
+        this.y += deltaY;
     }
 
     public double getX() { return x; }
