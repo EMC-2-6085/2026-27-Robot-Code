@@ -4,23 +4,26 @@ import org.firstinspires.ftc.teamcode.SubSystems.Mephistopheles;
 import org.firstinspires.ftc.teamcode.SubSystems.Vision;
 import org.firstinspires.ftc.teamcode.SubSystems.Localization;
 import org.firstinspires.ftc.teamcode.SubSystems.Shooter;
+import org.firstinspires.ftc.teamcode.SubSystems.Indexer;
 
 public class ShootCommand {
     private Mephistopheles mephi;
     private Vision vision;
     private Localization localization;
     private Shooter shooter;
+    private Indexer indexer;
     private int speedPct;
     
     private double[] targetPose = null;
     private boolean finished = false;
     private boolean shotPrepared = false;
 
-    public ShootCommand(Mephistopheles mephi, Vision vision, Localization localization, Shooter shooter, int speedPct) {
+    public ShootCommand(Mephistopheles mephi, Vision vision, Localization localization, Shooter shooter, Indexer indexer, int speedPct) {
         this.mephi = mephi;
         this.vision = vision;
         this.localization = localization;
         this.shooter = shooter;
+        this.indexer = indexer;
         this.speedPct = speedPct;
     }
 
@@ -39,6 +42,7 @@ public class ShootCommand {
             finished = mephi.goToPosition(targetPose[0], targetPose[1], targetPose[2], speedPct, "G01");
             if (finished && !shotPrepared) {
                 shooter.prepareShot();
+                indexer.spinForward();
                 shotPrepared = true;
             }
         } else {

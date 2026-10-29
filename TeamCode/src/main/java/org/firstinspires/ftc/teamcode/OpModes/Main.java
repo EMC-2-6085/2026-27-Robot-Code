@@ -7,10 +7,13 @@ import org.firstinspires.ftc.teamcode.Robot.Robot;
 import org.firstinspires.ftc.teamcode.SubSystems.GlassWindow;
 import org.firstinspires.ftc.teamcode.Util.Constants.driveTrainConstants;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
-import org.firstinspires.ftc.teamcode.Commands.IntakeCommand;
-import org.firstinspires.ftc.teamcode.Commands.ShootCommand;
 import org.firstinspires.ftc.teamcode.Util.Constants.intakeArmConstants;
+import org.firstinspires.ftc.teamcode.Commands.IntakeCommand;
+import org.firstinspires.ftc.teamcode.Commands.ForwardIndexCommand;
+import org.firstinspires.ftc.teamcode.Commands.ShootCommand;
+import org.firstinspires.ftc.teamcode.Commands.OhShitCommand;
 import java.util.List;
+
 
 @TeleOp(name = "Main TeleOp")
 public class Main extends LinearOpMode {
@@ -58,7 +61,19 @@ public class Main extends LinearOpMode {
             robot.vision, 
             robot.local, 
             robot.shooter, 
+            robot.indexer,
             80
+        );
+
+        ForwardIndexerCommand forwardIndex = new ForwardIndexerCommand(
+            robot.indexer
+        );
+
+        OhShitCommand ohShitCommand = new OhShitCommand(
+            robot.intake,
+            robot.intakeArm,
+            robot.indexer,
+            robot.shooter
         );
         
         boolean isShooting = false;
