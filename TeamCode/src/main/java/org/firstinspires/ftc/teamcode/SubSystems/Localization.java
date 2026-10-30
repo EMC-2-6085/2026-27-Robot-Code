@@ -4,7 +4,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
-import com.qualcomm.robotboard.hardware.GoBildaPinpointDriver;
+import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver; 
 import org.firstinspires.ftc.teamcode.Util.Constants.localizationConstants;
 
 public class Localization {
@@ -16,14 +16,15 @@ public class Localization {
 
     public Localization(HardwareMap hardwareMap) {
         pinpoint = hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
-        pinpoint.setOffsets(localizationConstants.Y_OFFSET, localizationConstants.X_OFFSET); 
-        pinpoint.setEncoderResolution(GoBildaPinpointDriver.EncoderResolution.FOUR_BAR_POD);
-        pinpoint.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.FORWARD, GoBildaPinpointDriver.EncoderDirection.FORWARD);
+
+        pinpoint.setOffsets(localizationConstants.Y_OFFSET, localizationConstants.X_OFFSET, DistanceUnit.MM); 
+        pinpoint.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD);
+        pinpoint.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.REVERSED, GoBildaPinpointDriver.EncoderDirection.REVERSED);
         pinpoint.update(); 
     }
-    
+
     //this is all a bit fucky with mephis x and y being opposite of the pinpoints but it should work
-    public void setX(double newX) { 
+     public void setX(double newX) { 
         this.x = newX;
         pinpoint.setPosition(new Pose2D(DistanceUnit.METER, this.y, newX, AngleUnit.RADIANS, this.heading));
     }
@@ -36,11 +37,6 @@ public class Localization {
     public double getX() { return x; }
     public double getY() { return y; }
     public double getHeading() { return heading; }
-    
-    public Pose2D getVelocity() {
-        Pose2D rawVel = pinpoint.getVelocity();
-        return new Pose2D(DistanceUnit.METER, rawVel.getY(DistanceUnit.METER), rawVel.getX(DistanceUnit.METER), AngleUnit.RADIANS, rawVel.getHeading(AngleUnit.RADIANS));
-    } //might need this at some point idk
     
     public void resetGyro() { 
         pinpoint.recalibrateIMU(); 
@@ -56,16 +52,36 @@ public class Localization {
         this.x = 0;
         this.y = 0;
         this.heading = 0;
-    } //dont call at the start of teleop
+    } //do not call at the start of teleop
 
     public void periodic() {
         pinpoint.update();
         Pose2D rawPose = pinpoint.getPosition();
-        
+                
         double rawX = rawPose.getX(DistanceUnit.METER);
         double rawY = rawPose.getY(DistanceUnit.METER);
+                
         this.x = rawY;
         this.y = rawX;
         this.heading = rawPose.getHeading(AngleUnit.RADIANS);
     }
+
+    public static class TagPose {
+        public double x, y, heading;
+        public double offsetX, offsetY, offsetHeading;
+        public double offsetPitch, offsetRoll;
+
+        public TagPose(double x, double y, double heading,
+                       double offsetX, double offsetY, double offsetHeading,
+                       double offsetPitch, double offsetRoll) {
+            this.x = x;
+            this.y = y;
+            this.heading = heading;
+            this.offsetX = offsetX;
+            this.offsetY = offsetY;
+            this.offsetHeading = offsetHeading;
+            this.offsetPitch = offsetPitch;
+            this.offsetRoll = offsetRoll;
+        }
+    } //will remove at somepoint, needed for compilation
 }

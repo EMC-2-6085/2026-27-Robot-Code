@@ -21,6 +21,8 @@ public class Constants {
     
     public static final double X_OFFSET = 6.9; //Meters
     public static final double Y_OFFSET = 6.9; //Meters
+    
+    public static final long CAMERA_ENCODE = 500; 
   }
 
   public static class mephiConstants {

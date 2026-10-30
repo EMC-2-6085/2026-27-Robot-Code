@@ -78,7 +78,6 @@ public class Vision {
 
             AprilTagLibrary.Builder libraryBuilder = new AprilTagLibrary.Builder();
             for (int id : uniqueTagIds) {
-                // 3.25 inches = 0.08255 meters
                 libraryBuilder.addTag(new AprilTagMetadata(id, "Tag " + id, 0.08255, DistanceUnit.METER));
             }
             AprilTagLibrary customLibrary = libraryBuilder.build();
