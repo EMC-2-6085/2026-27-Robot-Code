@@ -18,12 +18,9 @@ public class Constants {
     public static final double WHEEL_DIAMETER = 0.104; //Meters
     public static final double TICKS_PER_REV = 537.6; //Encoder ticks per revolution
     public static final double GEAR_RATIO = 1.0; //Motor:wheel
-
-    public static final double ENCODER_WEIGHT = 0.45;
-    public static final double CAMERA_WEIGHT = 0.55;
-    public static final long CAMERA_ENCODE = 150;
-    public static final boolean USE_ENCODER = true;
-    public static final boolean USE_VISION = true;
+    
+    public static final double X_OFFSET = 6.9; //Meters
+    public static final double Y_OFFSET = 6.9; //Meters
   }
 
   public static class mephiConstants {

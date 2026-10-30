@@ -26,7 +26,7 @@ public class Robot {
     public Robot(HardwareMap hardwareMap) {
         drive = new Drivetrain(hardwareMap);
         vision = new Vision(hardwareMap);
-        local = new Localization(hardwareMap, vision);
+        local = new Localization(hardwareMap);
         lights = new Lights(hardwareMap);
         intakeArm = new IntakeArm(hardwareMap);
         intake = new Intake(hardwareMap);
