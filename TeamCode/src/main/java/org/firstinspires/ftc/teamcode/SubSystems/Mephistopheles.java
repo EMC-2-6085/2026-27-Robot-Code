@@ -3,7 +3,6 @@ package org.firstinspires.ftc.teamcode.SubSystems;
 import org.firstinspires.ftc.teamcode.SubSystems.Localization.TagPose;
 import org.firstinspires.ftc.teamcode.Util.Constants.mephiConstants;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import org.firstinspires.ftc.teamcode.SubSystems.Lights;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -17,7 +16,6 @@ public class Mephistopheles {
 
     private final Localization localization;
     private final MotorPID leftRearPID, rightRearPID, leftFrontPID, rightFrontPID;
-    private final Lights lights;
 
     private long targetStartTime = 0;
     private double lastTargetX = Double.NaN;
@@ -31,14 +29,12 @@ public class Mephistopheles {
                           MotorPID leftRearPID,
                           MotorPID rightRearPID,
                           MotorPID leftFrontPID,
-                          MotorPID rightFrontPID,
-                          Lights lights) {
+                          MotorPID rightFrontPID) {
         this.localization = localization;
         this.leftRearPID = leftRearPID;
         this.rightRearPID = rightRearPID;
         this.leftFrontPID = leftFrontPID;
         this.rightFrontPID = rightFrontPID;
-        this.lights = lights;
     }
 
     private double normalizeAngle(double angle) {
@@ -148,16 +144,16 @@ public class Mephistopheles {
 
         switch (code) {
             case 1:
-                lights.whiteOn();
+                //lights.whiteOn();
                 break;
             case 2:
-                lights.redOn();
+                //lights.redOn();
                 break;
             case 3:
-                lights.greenOn();
+                //lights.greenOn();
                 break;
             case 4:
-                lights.blueOn();
+                //lights.blueOn();
                 break;
             default:
                 break;

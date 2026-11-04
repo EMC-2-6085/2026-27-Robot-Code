@@ -634,7 +634,7 @@ public class GlassWindow extends NanoHTTPD {
         sb.append("    }");
         sb.append("    ctx.stroke();");
         sb.append("  }");
-        sb.append("  function renderFieldMap(htmlId, poseData, bgBase64) {");
+   sb.append("  function renderFieldMap(htmlId, poseData, bgBase64) {");
         sb.append("    let c = document.getElementById('canvas-' + htmlId); if (!c) return; let ctx = c.getContext('2d');");
         sb.append("    let pW = c.parentElement.clientWidth; let pH = c.parentElement.clientHeight - 20;");
         sb.append("    if (c.width !== pW || c.height !== pH) { c.width = pW; c.height = pH; }");
@@ -654,17 +654,20 @@ public class GlassWindow extends NanoHTTPD {
         sb.append("    } else { drawDefaultGrid(ctx, offsetX, offsetY, mapSize); }");
         sb.append("    if (!poseData) return;");
         sb.append("    let parts = poseData.split(','); if(parts.length < 3) return;");
-        sb.append("    let robotX = parseFloat(parts[0]); let robotY = parseFloat(parts[1]); let heading = parseFloat(parts[2]);");
+        sb.append("    let robotY = parseFloat(parts[0]); let robotX = parseFloat(parts[1]); let heading = parseFloat(parts[2]);");
         sb.append("    let metersToPixels = mapSize / 4.0;");
-        sb.append("    let px = offsetX + mapSize - (robotY * metersToPixels);");
-        sb.append("    let py = offsetY + mapSize - (robotX * metersToPixels);");
+        sb.append("    let px = offsetX + mapSize - (robotX * metersToPixels);"); // Inverted X to fix the flip
+        sb.append("    let py = offsetY + mapSize - (robotY * metersToPixels);");
         sb.append("    let robotSizeMeters = 0.4572; let rSizePx = robotSizeMeters * metersToPixels;");
-        sb.append("    ctx.save(); ctx.translate(px, py); ctx.rotate(-heading);");
+        sb.append("    ctx.save();");
+        sb.append("    ctx.translate(px, py);"); 
+        sb.append("    ctx.rotate(-heading);");
         sb.append("    ctx.strokeStyle = '#38bdf8'; ctx.lineWidth = 2.5; ctx.fillStyle = 'rgba(56, 189, 248, 0.2)';");
         sb.append("    ctx.fillRect(-rSizePx/2, -rSizePx/2, rSizePx, rSizePx); ctx.strokeRect(-rSizePx/2, -rSizePx/2, rSizePx, rSizePx);");
         sb.append("    ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(0, -rSizePx * 0.7);");
         sb.append("    ctx.lineTo(-rSizePx * 0.2, -rSizePx * 0.5); ctx.moveTo(0, -rSizePx * 0.7); ctx.lineTo(rSizePx * 0.2, -rSizePx * 0.5);");
-        sb.append("    ctx.strokeStyle = '#f4f4f5'; ctx.lineWidth = 2; ctx.stroke(); ctx.restore();");
+        sb.append("    ctx.strokeStyle = '#f4f4f5'; ctx.lineWidth = 2; ctx.stroke();");
+        sb.append("    ctx.restore();");
         sb.append("  }");
         sb.append("  function drawDefaultGrid(ctx, ox, oy, size) {");
         sb.append("    ctx.fillStyle = '#141722'; ctx.fillRect(ox, oy, size, size);");

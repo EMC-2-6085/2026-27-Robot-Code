@@ -9,7 +9,6 @@ public class Robot {
     public final Drivetrain drive;
     public final Vision vision;        
     public final Localization local;   
-    public final Lights lights;
     public final IntakeArm intakeArm;
     public final Intake intake;
     public final Indexer indexer;
@@ -27,7 +26,6 @@ public class Robot {
         drive = new Drivetrain(hardwareMap);
         vision = new Vision(hardwareMap);
         local = new Localization(hardwareMap);
-        lights = new Lights(hardwareMap);
         intakeArm = new IntakeArm(hardwareMap);
         intake = new Intake(hardwareMap);
         indexer = new Indexer(hardwareMap);
@@ -51,8 +49,7 @@ public class Robot {
             posPIDLeftRear,
             posPIDRightRear,
             posPIDLeftFront,
-            posPIDRightFront,
-            lights
+            posPIDRightFront
         );
     }
 }

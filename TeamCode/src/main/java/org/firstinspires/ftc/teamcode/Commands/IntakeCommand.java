@@ -1,4 +1,8 @@
+package org.firstinspires.ftc.teamcode.Commands;
+
 import org.firstinspires.ftc.teamcode.Util.Constants.intakeArmConstants;
+import org.firstinspires.ftc.teamcode.SubSystems.Intake;
+import org.firstinspires.ftc.teamcode.SubSystems.IntakeArm;
 
 public class IntakeCommand {
     private IntakeArm intakeArm;
@@ -18,7 +22,7 @@ public class IntakeCommand {
     public void execute() {
         initialize();
 
-        if (endRadians == intakeArmConstants.ArmDownRadians){
+        if (endRadians == intakeArmConstants.ARM_DOWN_RADIANS){
             intake.intake();
         }else{
             intake.stop();

@@ -1,4 +1,7 @@
+package org.firstinspires.ftc.teamcode.Commands;
+
 import org.firstinspires.ftc.teamcode.Util.Constants.indexerConstants;
+import org.firstinspires.ftc.teamcode.SubSystems.Indexer;
 
 public class ForwardIndexCommand {
     private Indexer indexer;

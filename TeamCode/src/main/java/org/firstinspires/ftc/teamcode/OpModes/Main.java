@@ -65,7 +65,7 @@ public class Main extends LinearOpMode {
             80
         );
 
-        ForwardIndexerCommand forwardIndex = new ForwardIndexerCommand(
+        ForwardIndexCommand forwardIndex = new ForwardIndexCommand(
             robot.indexer
         );
 

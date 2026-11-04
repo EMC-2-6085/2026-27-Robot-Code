@@ -19,7 +19,7 @@ public class Localization {
 
         pinpoint.setOffsets(localizationConstants.Y_OFFSET, localizationConstants.X_OFFSET, DistanceUnit.MM); 
         pinpoint.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD);
-        pinpoint.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.REVERSED, GoBildaPinpointDriver.EncoderDirection.REVERSED);
+        pinpoint.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.FORWARD, GoBildaPinpointDriver.EncoderDirection.REVERSED);
         pinpoint.update(); 
     }
 

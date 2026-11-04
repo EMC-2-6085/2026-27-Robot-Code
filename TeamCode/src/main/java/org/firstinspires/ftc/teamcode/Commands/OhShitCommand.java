@@ -1,3 +1,5 @@
+package org.firstinspires.ftc.teamcode.Commands;
+
 import org.firstinspires.ftc.teamcode.Util.Constants.indexerConstants;
 import org.firstinspires.ftc.teamcode.SubSystems.Shooter;
 import org.firstinspires.ftc.teamcode.SubSystems.Indexer;
@@ -23,8 +25,8 @@ public class OhShitCommand {
     public void execute() {
         initialize();
         intake.outtake();
-        indexer.spinBackwards();
-        shooter.spinBackwards();
+        indexer.spinBackward();
+        shooter.spinBackward();
     }
 
      public void end() {
