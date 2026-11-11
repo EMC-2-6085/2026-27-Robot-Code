@@ -22,7 +22,7 @@ public class Constants {
     public static final double X_OFFSET = 0.0; //mm
     public static final double Y_OFFSET = 210.0; //mm
     
-    public static final long CAMERA_ENCODE = 500; 
+    public static final long CAMERA_ENCODE = 250; 
   }
 
   public static class mephiConstants {
@@ -67,8 +67,8 @@ public class Constants {
   }
 
   public static class shooterConstants {
-    public static final double SHOOT_DISTANCE = 2.0; //Meters temp
-    public static final double[] CAMERA_OFFSET = {0, 0}; //Meters from robot center to lens (x, y) temp
+    public static final double SHOOT_DISTANCE = 1; //Meters temp
+    public static final double[] CAMERA_OFFSET = {-0.08, 0.16}; //Meters from robot center to lens (x, y) temp
     public static final double ENCODER_CPR = 537.7; //temp
     public static final double SHOOTER_KP = 0.0032; //temp
     public static final double SHOOTER_KI = 0.0; //temp
@@ -81,7 +81,7 @@ public class Constants {
 
   public static class visionConstants {
     public static final int[] RED_AUDIENCE_TAGS   = {34, 35, 36, 37};
-    public static final int[] RED_BACKSIDE_TAGS   = {30, 31, 32, 33};
+    public static final int[] RED_BACKSIDE_TAGS  = {30, 31, 32, 33};
     public static final int[] BLUE_AUDIENCE_TAGS  = {38, 39, 40, 41};
     public static final int[] BLUE_BACKSIDE_TAGS  = {42, 43, 44, 45};
 }

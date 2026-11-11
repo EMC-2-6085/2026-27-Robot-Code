@@ -65,6 +65,12 @@ public class Vision {
         this.hardwareMap = hardwareMap;
         this.frameEncoder1 = new FrameEncoderProcessor();
         this.frameEncoder2 = new FrameEncoderProcessor();
+
+        redAudienceCluster.setTargetHeading(0.0);
+        blueAudienceCluster.setTargetHeading(0.0);
+        redBacksideCluster.setTargetHeading(3.14159);
+        blueBacksideCluster.setTargetHeading(3.14159);
+
         initVision();
     }
 
@@ -98,7 +104,7 @@ public class Vision {
             if (webcam1Name != null) {
                 visionPortal1 = new VisionPortal.Builder()
                         .setCamera(webcam1Name)
-                        .setCameraResolution(new android.util.Size(320, 240))
+                        .setCameraResolution(new android.util.Size(640, 480))
                         .setStreamFormat(VisionPortal.StreamFormat.MJPEG)
                         .enableLiveView(false)
                         .addProcessor(aprilTagProcessor1)
@@ -110,7 +116,7 @@ public class Vision {
             if (webcam2Name != null) {
                 visionPortal2 = new VisionPortal.Builder()
                         .setCamera(webcam2Name)
-                        .setCameraResolution(new android.util.Size(320, 240))
+                        .setCameraResolution(new android.util.Size(640, 480))
                         .setStreamFormat(VisionPortal.StreamFormat.MJPEG)
                         .enableLiveView(false)
                         .addProcessor(aprilTagProcessor2)

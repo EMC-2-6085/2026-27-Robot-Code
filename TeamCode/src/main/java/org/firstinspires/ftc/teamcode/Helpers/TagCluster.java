@@ -72,12 +72,9 @@ public class TagCluster {
         double currentY = localization.getY();
         
         double[] offset = getAverage();
-
-        double tagGlobalX = currentX + (offset[0] * -offsetMultipler);
-        double tagGlobalY = currentY + (offset[1] * -offsetMultipler);
-
-        double targetX = tagGlobalX - (shooterConstants.CAMERA_OFFSET[0] * offsetMultipler);
-        double targetY = tagGlobalY + (shooterConstants.SHOOT_DISTANCE * offsetMultipler) - (shooterConstants.CAMERA_OFFSET[1] * offsetMultipler);
+        double targetX = currentX + (offset[0] * -offsetMultipler) - (shooterConstants.CAMERA_OFFSET[0] * offsetMultipler);
+        double tagGlobalY = currentY + (offset[1] * offsetMultipler);
+        double targetY = tagGlobalY + (shooterConstants.SHOOT_DISTANCE * -offsetMultipler) - (shooterConstants.CAMERA_OFFSET[1] * offsetMultipler);
 
         double[] newPosition = new double[3];
         newPosition[0] = targetX;
