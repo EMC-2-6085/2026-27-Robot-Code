@@ -62,7 +62,8 @@ public class Main extends LinearOpMode {
             robot.local, 
             robot.shooter, 
             robot.indexer,
-            80
+            80,
+            true
         );
 
         ForwardIndexCommand forwardIndex = new ForwardIndexCommand(
@@ -147,6 +148,8 @@ public class Main extends LinearOpMode {
                 telemetry.addData("Latest Tag ID", robot.vision.getLatestTagId());
                 telemetry.addData("Raw Detections Count", robot.vision.getCamDetections().size());
                 telemetry.addData("Latest Raw Tag ID", robot.vision.getLatestTagId());
+                telemetry.addData("Camera Forward Distance (m)", robot.vision.getCamY());
+                telemetry.addData("Camera Lateral Distance (m)", robot.vision.getCamX());
                 double[] targetPose = robot.vision.getActiveTargetPosition(robot.local);
                 
                 if (targetPose != null) {
@@ -155,6 +158,18 @@ public class Main extends LinearOpMode {
                     telemetry.addData("Target Heading (rad)", targetPose[2]);
                 } else {
                     telemetry.addData("Target Position", "No active hive cluster in view");
+                }
+                
+                List<AprilTagDetection> currentDetections = robot.vision.getCamDetections();
+                telemetry.addData("Total Tags Visible", currentDetections.size());
+                
+                for (AprilTagDetection detection : currentDetections) {
+                    if (detection.ftcPose != null) {
+                        telemetry.addData("Tag ID " + detection.id, 
+                            String.format("Range: %.2fm | FOM (Margin): %.1f", 
+                            detection.ftcPose.range, 
+                            detection.decisionMargin));
+                    }
                 }
                 telemetry.update();
 
