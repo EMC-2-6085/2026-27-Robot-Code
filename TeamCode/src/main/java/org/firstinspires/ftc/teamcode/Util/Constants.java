@@ -5,10 +5,10 @@ public class Constants {
     public static final double WHEEL_POWER_LARGE = 1.0;
     public static final double WHEEL_POWER_TINY = 0.5;
     
-    public static final double WHEEL_P = 0.0065;
-    public static final double WHEEL_I = 0.0001;
-    public static final double WHEEL_D = 0.0001125;
-    public static final double HEADING_P = 0.02;
+    public static final double WHEEL_P = 0.055;
+    public static final double WHEEL_I = 0.0003;
+    public static final double WHEEL_D = 0.000055;
+    public static final double HEADING_P = 0.025;
     
     public static final double INTERGRAL_LIMIT = 200.0;
     public static final double ACCEPTABLE_ERROR = 1.0; //Encoder ticks
@@ -27,9 +27,9 @@ public class Constants {
 
   public static class mephiConstants {
     public static final double FORWARD_SCALE = 1.8;
-    public static final double STRAFE_SCALE = 1; 
-    public static final double TURN_SCALE = -0.8;
-    public static final double TURN_D = -0.05;
+    public static final double STRAFE_SCALE = 1.7; 
+    public static final double TURN_SCALE = -1;
+    public static final double TURN_D = -0.04;
   }
 
   public static class intakeArmConstants {
