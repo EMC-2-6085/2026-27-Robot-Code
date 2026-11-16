@@ -35,7 +35,6 @@ public class ShootCommand {
     public void initialize() {
         List<AprilTagDetection> detections = vision.getCamDetections();
         
-        // 1. Evaluate vision reliability (> 2 tags and decision margin >= 75)
         boolean visionReliable = false;
         if (detections != null && detections.size() > 2) {
             boolean highConfidence = true;
@@ -50,17 +49,14 @@ public class ShootCommand {
             }
         }
 
-        // 2. Use vision target if reliable
         if (visionReliable) {
             targetPose = vision.getActiveTargetPosition(localization);
         }
 
-        // 3. Fallback to Localization logic if vision is unreliable or unavailable
         if (!visionReliable || targetPose == null) {
             double currentX = localization.getX();
             double currentY = localization.getY();
-            
-            // Y-axis deadzone: if Y is between 1.3288 and 2.3288, do nothing
+
             if (currentY > 1.3288 && currentY < 2.3288) {
                 targetPose = null;
                 finished = true; 
@@ -72,15 +68,12 @@ public class ShootCommand {
             double targetX;
             double targetY;
 
-            // Define field goal Y coordinates for audience and backside (update with exact field measurements in meters)
             double goalYAudience = 0.0;     
             double goalYBackside = 3.6576;  
 
-            // Determine if backside or audience based on Y position relative to the deadzone bounds
             boolean isBackside = (currentY >= 2.3288);
             double goalY = isBackside ? goalYBackside : goalYAudience;
 
-            // Heading and Y-target are driven entirely by currentY / side of the field
             if (isBackside) {
                 targetHeading = 3.14; 
                 targetY = goalY - shooterConstants.SHOOT_DISTANCE;
@@ -88,8 +81,7 @@ public class ShootCommand {
                 targetHeading = 0.0;
                 targetY = goalY + shooterConstants.SHOOT_DISTANCE;
             }
-
-            // Target X based on alliance color
+            
             if (this.isRed) {
                 targetX = 1.524;
             } else {
@@ -105,7 +97,7 @@ public class ShootCommand {
 
     public void execute() {
         if (targetPose == null) {
-            if (finished) return; // Stay stopped if inside the deadzone
+            if (finished) return;
             initialize();
         }
 
