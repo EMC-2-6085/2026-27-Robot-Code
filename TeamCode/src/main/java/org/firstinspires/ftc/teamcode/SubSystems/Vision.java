@@ -12,6 +12,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.VisionProcessor;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
+import org.firstinspires.ftc.vision.apriltag.AprilTagSingleDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagLibrary;
 import org.firstinspires.ftc.vision.apriltag.AprilTagMetadata;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
@@ -146,12 +147,14 @@ public class Vision {
         double[][] blueAudTags = new double[4][3];
         double[][] blueBackTags = new double[4][3];
 
-        AprilTagDetection bestDetection = null;
+        AprilTagSingleDetection bestDetection = null;
         double closestDistance = Double.MAX_VALUE;
         HiveCluster detectedCluster = HiveCluster.NONE;
 
         for (AprilTagDetection detection : activeDetections) {
-            int id = detection.id;
+            if (!(detection instanceof AprilTagSingleDetection)) continue;
+            AprilTagSingleDetection singleDet = (AprilTagSingleDetection) detection;
+            int id = singleDet.id;
 
             int idx = getIndexInArray(visionConstants.RED_AUDIENCE_TAGS, id);
             if (idx != -1) detectedCluster = HiveCluster.RED_AUDIENCE;
@@ -165,14 +168,14 @@ public class Vision {
             idx = getIndexInArray(visionConstants.BLUE_BACKSIDE_TAGS, id);
             if (idx != -1) detectedCluster = HiveCluster.BLUE_BACKSIDE;
 
-            if (detection.ftcPose == null) continue;
+            if (singleDet.ftcPose == null) continue;
 
-            if (detection.ftcPose.range < closestDistance) {
-                closestDistance = detection.ftcPose.range;
-                bestDetection = detection;
+            if (singleDet.ftcPose.range < closestDistance) {
+                closestDistance = singleDet.ftcPose.range;
+                bestDetection = singleDet;
             }
 
-            double[] poseData = new double[] { detection.ftcPose.x, detection.ftcPose.y, detection.ftcPose.z };
+            double[] poseData = new double[] { singleDet.ftcPose.x, singleDet.ftcPose.y, singleDet.ftcPose.z };
 
             idx = getIndexInArray(visionConstants.RED_AUDIENCE_TAGS, id);
             if (idx != -1) redAudTags[idx] = poseData;
@@ -203,7 +206,9 @@ public class Vision {
             double pitch = bestDetection.ftcPose.pitch;
             this.latestIsUpsideDown = (Math.abs(roll) > Math.PI / 2.0 || Math.abs(pitch) > Math.PI / 2.0);
         } else if (!activeDetections.isEmpty()) {
-            this.latestTagId = activeDetections.get(0).id;
+            this.latestTagId = activeDetections.get(0) instanceof AprilTagSingleDetection 
+                ? ((AprilTagSingleDetection) activeDetections.get(0)).id 
+                : 0;
             this.latestCamX = 0.0;
             this.latestCamY = 0.0;
             this.latestCamHeading = 0.0;

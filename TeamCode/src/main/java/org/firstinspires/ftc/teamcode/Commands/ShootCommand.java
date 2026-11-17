@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.Commands;
 
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
+import org.firstinspires.ftc.vision.apriltag.AprilTagSingleDetection;
 import org.firstinspires.ftc.teamcode.SubSystems.Mephistopheles;
 import org.firstinspires.ftc.teamcode.SubSystems.Vision;
 import org.firstinspires.ftc.teamcode.SubSystems.Localization;
@@ -39,9 +40,12 @@ public class ShootCommand {
         if (detections != null && detections.size() > 2) {
             boolean highConfidence = true;
             for (AprilTagDetection detection : detections) {
-                if (detection.decisionMargin < 75) {
-                    highConfidence = false;
-                    break;
+                if (detection instanceof AprilTagSingleDetection) {
+                    AprilTagSingleDetection singleDet = (AprilTagSingleDetection) detection;
+                    if (singleDet.decisionMargin < 75) {
+                        highConfidence = false;
+                        break;
+                    }
                 }
             }
             if (highConfidence) {

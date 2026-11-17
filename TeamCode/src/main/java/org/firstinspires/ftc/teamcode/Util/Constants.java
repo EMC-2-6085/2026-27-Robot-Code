@@ -20,7 +20,7 @@ public class Constants {
     public static final double GEAR_RATIO = 1.0; //Motor:wheel
     
     public static final double X_OFFSET = 0.0; //mm
-    public static final double Y_OFFSET = 210.0; //mm
+    public static final double Y_OFFSET = -210.0; //mm
     
     public static final long CAMERA_ENCODE = 250; 
   }

@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.OpModes;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
+import org.firstinspires.ftc.vision.apriltag.AprilTagSingleDetection;
 import org.firstinspires.ftc.teamcode.Robot.Robot;
 import org.firstinspires.ftc.teamcode.SubSystems.GlassWindow;
 import org.firstinspires.ftc.teamcode.Util.Constants.driveTrainConstants;
@@ -162,11 +163,16 @@ public class Main extends LinearOpMode {
                 telemetry.addData("Total Tags Visible", currentDetections.size());
                 
                 for (AprilTagDetection detection : currentDetections) {
-                    if (detection.ftcPose != null) {
-                        telemetry.addData("Tag ID " + detection.id, 
-                            String.format("Range: %.2fm | FOM: %.1f", 
-                            detection.ftcPose.range, 
-                            detection.decisionMargin));
+                    if (detection instanceof AprilTagSingleDetection) {
+                        org.firstinspires.ftc.vision.apriltag.AprilTagSingleDetection singleDet = 
+                            (org.firstinspires.ftc.vision.apriltag.AprilTagSingleDetection) detection;
+                        
+                        if (singleDet.ftcPose != null) {
+                            telemetry.addData("Tag ID " + singleDet.id, 
+                                String.format("Range: %.2fm | FOM: %.1f", 
+                                singleDet.ftcPose.range, 
+                                (double) singleDet.decisionMargin));
+                        }
                     }
                 }
                 telemetry.update();
