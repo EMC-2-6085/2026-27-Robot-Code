@@ -1,4 +1,5 @@
 package org.firstinspires.ftc.teamcode.SubSystems;
+
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.teamcode.Util.Constants.indexerConstants;
@@ -18,6 +19,7 @@ public class Indexer {
             indexerConstants.INDEXER_KP,
             indexerConstants.INDEXER_KI,
             indexerConstants.INDEXER_KD,
+            indexerConstants.INDEXER_KV, // <-- Added Feedforward gain
             indexerConstants.INTEGRAL_LIMIT,
             indexerConstants.ACCEPTABLE_ERROR
         );

@@ -11,6 +11,8 @@ public class Drivetrain {
     private final double wheelPowerLarge = driveTrainConstants.WHEEL_POWER_LARGE;
     private double headingP = driveTrainConstants.HEADING_P;
 
+    private double velocityMulti = 1.0;
+
     public Drivetrain(HardwareMap hardwareMap) {
         leftRear = hardwareMap.get(DcMotor.class, "leftRear");
         rightRear = hardwareMap.get(DcMotor.class, "rightRear");
@@ -57,9 +59,21 @@ public class Drivetrain {
     public void stop() { setPower(0, 0, 0, 0); }
 
     public void setPower(double lr, double rr, double lf, double rf) {
-        leftRear.setPower(lr);
-        rightRear.setPower(rr);
-        leftFront.setPower(lf);
-        rightFront.setPower(rf);
+        leftRear.setPower(lr * velocityMulti);
+        rightRear.setPower(rr * velocityMulti);
+        leftFront.setPower(lf * velocityMulti);
+        rightFront.setPower(rf * velocityMulti);
+    }
+
+    public void multiUp() {
+        //velocityMulti = Math.clamp(velocityMulti + 0.2, 0.2, 1.0);
+    }
+
+    public void multiDown() {
+       // velocityMulti = Math.clamp(velocityMulti - 0.2, 0.2, 1.0);
+    }
+
+    public double getMulti() {
+        return velocityMulti;
     }
 }

@@ -6,11 +6,13 @@ import com.qualcomm.robotcore.hardware.VoltageSensor;
 import org.firstinspires.ftc.vision.apriltag.AprilTagSingleDetection;
 import org.firstinspires.ftc.teamcode.Robot.Robot;
 import org.firstinspires.ftc.teamcode.SubSystems.GlassWindow;
+import org.firstinspires.ftc.teamcode.Util.Constants;
 import org.firstinspires.ftc.teamcode.Util.Constants.driveTrainConstants;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.teamcode.Util.Constants.intakeArmConstants;
 import org.firstinspires.ftc.teamcode.Commands.IntakeCommand;
 import org.firstinspires.ftc.teamcode.Commands.ForwardIndexCommand;
+import org.firstinspires.ftc.teamcode.Commands.BackwardIndexCommand;
 import org.firstinspires.ftc.teamcode.Commands.ShootCommand;
 import org.firstinspires.ftc.teamcode.Commands.OhShitCommand;
 import java.util.List;
@@ -34,13 +36,16 @@ public class Main extends LinearOpMode {
 
         glassWindow = new GlassWindow(hardwareMap, robot.vision);
         try { 
-            glassWindow.start(); 
+            if (Constants.DEBUG == true) {
+                glassWindow.start(); 
+            } 
         } catch(Exception ignored) {}
         currentHeading = robot.local.getHeading();
 
-        glassWindow.addCamera("Vision/Webcam 1", "Webcam 1", "4:3");
-        glassWindow.addCamera("Vision/Webcam 2", "Webcam 2", "4:3");
-
+        if (Constants.DEBUG == true) {
+            glassWindow.addCamera("Vision/Webcam 1", "Webcam 1", "4:3");
+        }
+        
         IntakeCommand raiseCommand = new IntakeCommand(
             robot.intakeArm, 
             robot.intake, 
@@ -71,6 +76,10 @@ public class Main extends LinearOpMode {
             robot.indexer
         );
 
+        BackwardIndexCommand backwardIndex = new BackwardIndexCommand(
+            robot.indexer
+        );
+
         OhShitCommand ohShitCommand = new OhShitCommand(
             robot.intake,
             robot.intakeArm,
@@ -87,6 +96,7 @@ public class Main extends LinearOpMode {
                 robot.local.periodic();
                 robot.intake.periodic();
                 robot.intakeArm.periodic();
+                robot.indexer.periodic();
                 robot.vision.update();
 
                 currentHeading = robot.local.getHeading();
@@ -114,31 +124,59 @@ public class Main extends LinearOpMode {
                 }
                 robot.drive.moveRobot(x, y, turn, currentHeading, targetHeading, moveField);
 
+                //toggle movement type
                 if (gamepad1.backWasPressed()) { 
                     moveField = !moveField; 
                 }
+                //reset gyro
                 if (gamepad1.yWasPressed()) {
                     robot.local.resetGyro();
                 }
-
-                if (gamepad2.rightBumperWasPressed()) {
-                    raiseCommand.execute();
-                } else if (gamepad2.rightTriggerWasPressed()) {
-                    lowerCommand.execute();
-                } else if (gamepad2.yWasPressed()) {
-                    inCommand.execute();
+                //speed down
+                if (gamepad1.leftTriggerWasPressed()) {
+                    robot.drive.multiDown();
                 }
-                
+                //speed up
+                if (gamepad1.rightTriggerWasPressed()) {
+                    robot.drive.multiUp();
+                }
+                //intake arm positions
+                if (gamepad2.rightBumperWasPressed()) {
+                    ohShitCommand.end();
+                    lowerCommand.execute();
+                } else if (gamepad2.rightTriggerWasPressed()) {
+                    ohShitCommand.end();
+                    inCommand.execute();
+                } else if (gamepad2.yWasPressed()) {
+                    ohShitCommand.end();
+                    raiseCommand.execute();
+                }
+                //try to shoot
                 if (gamepad2.leftBumperWasPressed()) {
+                    ohShitCommand.end();
                     shootCommand.end();
                     isShooting = true;
                 }
-                
                 if (isShooting) {
                     shootCommand.execute();
                     if (shootCommand.isFinished()) {
                         isShooting = false;
                     }
+                }
+                //expel all balls
+                if (gamepad2.backWasPressed()) {
+                    ohShitCommand.execute();
+                }
+                //indexer commands
+                if (gamepad2.x) {
+                    ohShitCommand.end();
+                    forwardIndex.execute();
+                } else if (gamepad2.b) {
+                    ohShitCommand.end();
+                    backwardIndex.execute();
+                } else {
+                    forwardIndex.end();
+                    backwardIndex.end();
                 }
                 
                 telemetry.addData("Movement", moveField ? "Field" : "Robot");
@@ -177,11 +215,13 @@ public class Main extends LinearOpMode {
                 }
                 telemetry.update();
 
-                glassWindow.addDouble("Robot/X", robot.local.getX());
-                glassWindow.addDouble("Robot/Y", robot.local.getY());
-                glassWindow.addGraph("Robot/Heading", robot.local.getHeading(), null, 0.00001);
-                glassWindow.addField("Field/Vector Map", robot.local.getX(), robot.local.getY(), robot.local.getHeading());
-                glassWindow.addGraph("Battery/Volts", voltSensor.getVoltage(), "V", 0.01);
+                if (Constants.DEBUG == true) {
+                    glassWindow.addDouble("Robot/X", robot.local.getX());
+                    glassWindow.addDouble("Robot/Y", robot.local.getY());
+                    glassWindow.addGraph("Robot/Heading", robot.local.getHeading(), null, 0.00001);
+                    glassWindow.addField("Field/Vector Map", robot.local.getX(), robot.local.getY(), robot.local.getHeading());
+                    glassWindow.addGraph("Battery/Volts", voltSensor.getVoltage(), "V", 0.01);
+                }
             }
 
         } finally {

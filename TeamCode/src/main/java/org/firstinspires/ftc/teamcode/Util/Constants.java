@@ -1,13 +1,16 @@
 package org.firstinspires.ftc.teamcode.Util;
 
 public class Constants {
+
+  public static final boolean DEBUG = true; //disable for competition
+
   public static class driveTrainConstants {
     public static final double WHEEL_POWER_LARGE = 1.0;
     public static final double WHEEL_POWER_TINY = 0.5;
     
-    public static final double WHEEL_P = 0.055;
-    public static final double WHEEL_I = 0.0003;
-    public static final double WHEEL_D = 0.000055;
+    public static final double WHEEL_P = 0.055; //temp
+    public static final double WHEEL_I = 0.0003; //temp
+    public static final double WHEEL_D = 0.000055; //temp
     public static final double HEADING_P = 0.025;
     
     public static final double INTERGRAL_LIMIT = 200.0;
@@ -36,46 +39,49 @@ public class Constants {
     public static final double ARM_KP = 0.0065; //temp
     public static final double ARM_KI = 0.0001; //temp
     public static final double ARM_KD = 0.0001125; //temp
-    public static final double INTEGRAL_LIMIT = 200.0; //temp
+    public static final double INTEGRAL_LIMIT = 200.0;
 
-    public static final double ARM_UP_RADIANS = 0; //temp
+    public static final double ARM_UP_RADIANS = 0;
     public static final double ARM_DOWN_RADIANS = 1.570795; //temp
     public static final double ARM_IN_RADIANS = 3.14159; //temp
-    public static final double ACCEPTABLE_ERROR = 1.0; //temp
+    public static final double ACCEPTABLE_ERROR = 1.0;
 
-    public static final double RADIANS_TO_TICKS = 171.16; //temp
+    public static final double RADIANS_TO_TICKS = 117.46;
   }
 
   public static class intakeConstants {
-    public static final double ENCODER_CPR = 537.7; //temp
-    public static final double INTAKE_KP = 0.0032; //temp
-    public static final double INTAKE_KI = 0.0; //temp
-    public static final double INTAKE_KD = 0.0; //temp
-    public static final double INTEGRAL_LIMIT = 200.0; //temp
-    public static final double ACCEPTABLE_ERROR = 1.0; //RPM temp
-    public static final double INTAKE_RPM = 312.0; //temp
+    public static final double ENCODER_CPR = 28;
+    public static final double INTAKE_KP = 0.001; //temp
+    public static final double INTAKE_KI = 0.0;
+    public static final double INTAKE_KD = 0.00001; //temp
+    public static final double INTAKE_KV = 0.00025;
+    public static final double INTEGRAL_LIMIT = 0.0;
+    public static final double ACCEPTABLE_ERROR = 200.0; //RPM temp
+    public static final double INTAKE_RPM = 4000.0; //target RPM temp
   }
 
   public static class indexerConstants {
-    public static final double ENCODER_CPR = 537.7; //temp
+    public static final double ENCODER_CPR = 537.7;
     public static final double INDEXER_KP = 0.0032; //temp
     public static final double INDEXER_KI = 0.0; //temp
     public static final double INDEXER_KD = 0.0; //temp
-    public static final double INTEGRAL_LIMIT = 200.0; //temp
+    public static final double INDEXER_KV = 0.0015;
+    public static final double INTEGRAL_LIMIT = 0.0;
     public static final double ACCEPTABLE_ERROR = 1.0; //RPM temp
-    public static final double INDEXER_RPM = 312.0; //temp
+    public static final double INDEXER_RPM = 312.0; //target RPM
   }
 
   public static class shooterConstants {
     public static final double SHOOT_DISTANCE = 1; //Meters temp
     public static final double[] CAMERA_OFFSET = {-0.08, 0.16}; //Meters from robot center to lens (x, y) temp
-    public static final double ENCODER_CPR = 537.7; //temp
+    public static final double ENCODER_CPR = 28;
     public static final double SHOOTER_KP = 0.0032; //temp
     public static final double SHOOTER_KI = 0.0; //temp
     public static final double SHOOTER_KD = 0.0; //temp
-    public static final double INTEGRAL_LIMIT = 200.0; //temp
-    public static final double ACCEPTABLE_ERROR = 1.0; //RPM temp
-    public static final double SHOOTER_RPM = 6000.0; //temp
+    public static final double SHOOTER_KV = 0.000167;
+    public static final double INTEGRAL_LIMIT = 0.0;
+    public static final double ACCEPTABLE_ERROR = 50.0; //RPM temp
+    public static final double SHOOTER_RPM = 4000.0; //target RPM temp
     public static final double UNLOAD_RPM = -500.0; //temp
   }
 

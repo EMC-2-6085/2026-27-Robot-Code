@@ -1,4 +1,5 @@
 package org.firstinspires.ftc.teamcode.SubSystems;
+
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.teamcode.Util.Constants.shooterConstants;
@@ -18,6 +19,7 @@ public class Shooter {
             shooterConstants.SHOOTER_KP,
             shooterConstants.SHOOTER_KI,
             shooterConstants.SHOOTER_KD,
+            shooterConstants.SHOOTER_KV, // <-- Added Feedforward gain
             shooterConstants.INTEGRAL_LIMIT,
             shooterConstants.ACCEPTABLE_ERROR
         );

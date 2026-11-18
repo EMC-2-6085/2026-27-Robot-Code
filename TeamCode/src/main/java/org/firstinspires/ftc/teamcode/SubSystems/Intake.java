@@ -1,4 +1,5 @@
 package org.firstinspires.ftc.teamcode.SubSystems;
+
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.teamcode.Util.Constants.intakeConstants;
@@ -18,6 +19,7 @@ public class Intake {
             intakeConstants.INTAKE_KP,
             intakeConstants.INTAKE_KI,
             intakeConstants.INTAKE_KD,
+            intakeConstants.INTAKE_KV,
             intakeConstants.INTEGRAL_LIMIT,
             intakeConstants.ACCEPTABLE_ERROR
         );

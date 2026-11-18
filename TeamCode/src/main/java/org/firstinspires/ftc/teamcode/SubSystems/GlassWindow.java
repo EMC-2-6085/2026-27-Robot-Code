@@ -195,7 +195,7 @@ public class GlassWindow extends NanoHTTPD {
                     String pathKey = entry.getKey();
                     String boundCamera = cameraConfigBindingMap.getOrDefault(pathKey, "Webcam 1");
                     if ("Webcam 2".equals(boundCamera)) {
-                        dataFields.put(pathKey, vision.getLatestBase64Frame2());
+                        //dataFields.put(pathKey, vision.getLatestBase64Frame2());
                     } else {
                         dataFields.put(pathKey, vision.getLatestBase64Frame1());
                     }

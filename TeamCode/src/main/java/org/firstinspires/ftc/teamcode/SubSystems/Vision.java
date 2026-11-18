@@ -39,12 +39,8 @@ public class Vision {
     private final HardwareMap hardwareMap;
     
     private VisionPortal visionPortal1;
-    private VisionPortal visionPortal2;
     private AprilTagProcessor aprilTagProcessor1;
-    private AprilTagProcessor aprilTagProcessor2;
-    
     private final FrameEncoderProcessor frameEncoder1;
-    private final FrameEncoderProcessor frameEncoder2;
 
     private volatile int latestTagId = 0;
     private volatile boolean latestIsUpsideDown = false;
@@ -65,7 +61,7 @@ public class Vision {
     public Vision(HardwareMap hardwareMap) {
         this.hardwareMap = hardwareMap;
         this.frameEncoder1 = new FrameEncoderProcessor();
-        this.frameEncoder2 = new FrameEncoderProcessor();
+
 
         redAudienceCluster.setTargetHeading(0.0);
         blueAudienceCluster.setTargetHeading(0.0);
@@ -95,12 +91,6 @@ public class Vision {
                     .setOutputUnits(DistanceUnit.METER, AngleUnit.RADIANS)
                     .build();
 
-            aprilTagProcessor2 = new AprilTagProcessor.Builder()
-                    .setTagFamily(AprilTagProcessor.TagFamily.TAG_36h11)
-                    .setTagLibrary(customLibrary)
-                    .setOutputUnits(DistanceUnit.METER, AngleUnit.RADIANS)
-                    .build();
-
             WebcamName webcam1Name = hardwareMap.tryGet(WebcamName.class, "Webcam 1");
             if (webcam1Name != null) {
                 visionPortal1 = new VisionPortal.Builder()
@@ -112,29 +102,15 @@ public class Vision {
                         .addProcessor(frameEncoder1)
                         .build();
             }
-
-            WebcamName webcam2Name = hardwareMap.tryGet(WebcamName.class, "Webcam 2");
-            if (webcam2Name != null) {
-                visionPortal2 = new VisionPortal.Builder()
-                        .setCamera(webcam2Name)
-                        .setCameraResolution(new android.util.Size(640, 480))
-                        .setStreamFormat(VisionPortal.StreamFormat.MJPEG)
-                        .enableLiveView(false)
-                        .addProcessor(aprilTagProcessor2)
-                        .addProcessor(frameEncoder2)
-                        .build();
-            }
         } catch (Exception e) {}
     }
 
     public void update() {
         List<AprilTagDetection> detections1 = (aprilTagProcessor1 != null) ? aprilTagProcessor1.getDetections() : null;
-        List<AprilTagDetection> detections2 = (aprilTagProcessor2 != null) ? aprilTagProcessor2.getDetections() : null;
 
         synchronized (detectionsLock) {
             activeDetections.clear();
             if (detections1 != null) activeDetections.addAll(detections1);
-            if (detections2 != null) activeDetections.addAll(detections2);
         }
 
         redAudienceCluster.clearCluster();
@@ -263,13 +239,10 @@ public class Vision {
     }
     
     public String getLatestBase64Frame1() { return this.frameEncoder1.getLatestBase64Frame(); }
-    public String getLatestBase64Frame2() { return this.frameEncoder2.getLatestBase64Frame(); }
 
     public void close() {
         if (visionPortal1 != null) visionPortal1.close();
-        if (visionPortal2 != null) visionPortal2.close();
         frameEncoder1.cleanup();
-        frameEncoder2.cleanup();
     }
 
     private static class FrameEncoderProcessor implements VisionProcessor {
