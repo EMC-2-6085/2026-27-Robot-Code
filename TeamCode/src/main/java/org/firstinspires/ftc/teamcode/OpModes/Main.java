@@ -46,46 +46,14 @@ public class Main extends LinearOpMode {
             glassWindow.addCamera("Vision/Webcam 1", "Webcam 1", "4:3");
         }
         
-        IntakeCommand raiseCommand = new IntakeCommand(
-            robot.intakeArm, 
-            robot.intake, 
-            intakeArmConstants.ARM_UP_RADIANS
-        );
-        IntakeCommand lowerCommand = new IntakeCommand(
-            robot.intakeArm, 
-            robot.intake, 
-            intakeArmConstants.ARM_DOWN_RADIANS
-        );
-        IntakeCommand inCommand = new IntakeCommand(
-            robot.intakeArm, 
-            robot.intake, 
-            intakeArmConstants.ARM_IN_RADIANS
-        );
-        
-        ShootCommand shootCommand = new ShootCommand(
-            robot.mephi, 
-            robot.vision, 
-            robot.local, 
-            robot.shooter, 
-            robot.indexer,
-            80,
-            true
-        );
-
-        ForwardIndexCommand forwardIndex = new ForwardIndexCommand(
-            robot.indexer
-        );
-
-        BackwardIndexCommand backwardIndex = new BackwardIndexCommand(
-            robot.indexer
-        );
-
-        OhShitCommand ohShitCommand = new OhShitCommand(
-            robot.intake,
-            robot.intakeArm,
-            robot.indexer,
-            robot.shooter
-        );
+        IntakeCommand raiseCommand = new IntakeCommand(robot.intakeArm, robot.intake, intakeArmConstants.ARM_UP_RADIANS);
+        IntakeCommand lowerCommand = new IntakeCommand(robot.intakeArm, robot.intake, intakeArmConstants.ARM_DOWN_RADIANS);
+        IntakeCommand inCommand = new IntakeCommand(robot.intakeArm, robot.intake,intakeArmConstants.ARM_IN_RADIANS);
+        ShootCommand shootCommand = new ShootCommand(robot.mephi, robot.vision, robot.local, robot.shooter, robot.indexer, 80, true);
+        //true if red, false if blue
+        ForwardIndexCommand forwardIndex = new ForwardIndexCommand(robot.indexer);
+        BackwardIndexCommand backwardIndex = new BackwardIndexCommand(robot.indexer);
+        OhShitCommand ohShitCommand = new OhShitCommand(robot.intake, robot.intakeArm, robot.indexer,robot.shooter);
         
         boolean isShooting = false;
         
@@ -98,7 +66,7 @@ public class Main extends LinearOpMode {
                 robot.intakeArm.periodic();
                 robot.indexer.periodic();
                 robot.shooter.periodic();
-                robot.vision.update();
+                //robot.vision.update(); camera not wired yet
                 
                 robot.shooter.prepareShot();
 
@@ -145,18 +113,14 @@ public class Main extends LinearOpMode {
                 }
                 //intake arm positions
                 if (gamepad2.rightBumperWasPressed()) {
-                    ohShitCommand.end();
                     lowerCommand.execute();
                 } else if (gamepad2.rightTriggerWasPressed()) {
-                    ohShitCommand.end();
                     inCommand.execute();
                 } else if (gamepad2.yWasPressed()) {
-                    ohShitCommand.end();
                     raiseCommand.execute();
                 }
                 //try to shoot
                 if (gamepad2.leftBumperWasPressed()) {
-                    ohShitCommand.end();
                     shootCommand.end();
                     isShooting = true;
                 }
@@ -172,10 +136,8 @@ public class Main extends LinearOpMode {
                 }
                 //indexer commands
                 if (gamepad2.x) {
-                    ohShitCommand.end();
                     forwardIndex.execute();
                 } else if (gamepad2.b) {
-                    ohShitCommand.end();
                     backwardIndex.execute();
                 } else {
                     forwardIndex.end();
@@ -187,48 +149,69 @@ public class Main extends LinearOpMode {
                 telemetry.addData("Y (m)", robot.local.getY());
                 telemetry.addData("Heading (rad)", currentHeading);
                 telemetry.addData("Active Cluster", robot.vision.getActiveCluster());
-                telemetry.addData("Latest Tag ID", robot.vision.getLatestTagId());
-                telemetry.addData("Raw Detections Count", robot.vision.getCamDetections().size());
-                telemetry.addData("Latest Raw Tag ID", robot.vision.getLatestTagId());
+                telemetry.addData("Tags Visible", robot.vision.getCamDetections().size());
+                telemetry.addData("Arm Target (rad)", robot.intakeArm.getTargetPosition());
+                telemetry.addData("Arm At Target", robot.intakeArm.checkAcceptableError());
+                telemetry.addData("Intake RPM", robot.intake.getRPM());
+                telemetry.addData("Intake At Target", robot.intake.checkAcceptableError());
+                telemetry.addData("Indexer RPM", robot.indexer.getRPM());
+                telemetry.addData("Indexer At Target", robot.indexer.checkAcceptableError());
+                telemetry.addData("Shooter RPM", robot.shooter.getRPM());
+                telemetry.addData("Shooter At Target", robot.shooter.checkAcceptableError());
+
+                //target position for shooting
                 double[] targetPose = robot.vision.getActiveTargetPosition(robot.local);
-                
                 if (targetPose != null) {
                     telemetry.addData("Target X (m)", targetPose[0]);
                     telemetry.addData("Target Y (m)", targetPose[1]);
                     telemetry.addData("Target Heading (rad)", targetPose[2]);
-                } else {
-                    telemetry.addData("Target Position", "No active hive cluster in view");
                 }
                 
-                List<AprilTagDetection> currentDetections = robot.vision.getCamDetections();
-                telemetry.addData("Total Tags Visible", currentDetections.size());
-                
-                for (AprilTagDetection detection : currentDetections) {
-                    if (detection instanceof AprilTagSingleDetection) {
-                        org.firstinspires.ftc.vision.apriltag.AprilTagSingleDetection singleDet = 
-                            (org.firstinspires.ftc.vision.apriltag.AprilTagSingleDetection) detection;
-                        
-                        if (singleDet.ftcPose != null) {
-                            telemetry.addData("Tag ID " + singleDet.id, 
-                                String.format("Range: %.2fm | FOM: %.1f", 
-                                singleDet.ftcPose.range, 
-                                (double) singleDet.decisionMargin));
+                //Range and FOM for each tag
+                if (Constants.DEBUG == true) {
+                     List<AprilTagDetection> currentDetections = robot.vision.getCamDetections();
+                    for (AprilTagDetection detection : currentDetections) {
+                        if (detection instanceof AprilTagSingleDetection) {
+                            org.firstinspires.ftc.vision.apriltag.AprilTagSingleDetection singleDet = 
+                                (org.firstinspires.ftc.vision.apriltag.AprilTagSingleDetection) detection;
+                            if (singleDet.ftcPose != null) {
+                                telemetry.addData("Tag ID " + singleDet.id, 
+                                    String.format("Range: %.2fm | FOM: %.1f", 
+                                    singleDet.ftcPose.range, 
+                                    (double) singleDet.decisionMargin));
+                            }
                         }
                     }
                 }
+
                 telemetry.update();
 
                 if (Constants.DEBUG == true) {
+                    //i love telemetry charlie! i love telemetry!
                     glassWindow.addDouble("Robot/X", robot.local.getX());
                     glassWindow.addDouble("Robot/Y", robot.local.getY());
-                    glassWindow.addGraph("Robot/Heading", robot.local.getHeading(), null, 0.00001);
+                    glassWindow.addGraph("Robot/Heading", robot.local.getHeading(), null, 0.0001);
                     glassWindow.addField("Field/Vector Map", robot.local.getX(), robot.local.getY(), robot.local.getHeading());
                     glassWindow.addGraph("Battery/Volts", voltSensor.getVoltage(), "V", 0.01);
+                    glassWindow.addString("Vision/Active Cluster", robot.vision.getActiveCluster());
+                    glassWindow.addDouble("Vision/Tags Visible", robot.vision.getCamDetections().size());
+                    glassWindow.addDouble("Arm/Target (rad)", robot.intakeArm.getTargetPosition());
+                    glassWindow.addDouble("Arm/Position (rad)", robot.intakeArm.intakeArmPID.getPosition() / intakeArmConstants.RADIANS_TO_TICKS);
+                    glassWindow.addBoolean("Arm/At Target", robot.intakeArm.checkAcceptableError());
+                    glassWindow.addDouble("Intake/RPM", robot.intake.getRPM());
+                    glassWindow.addDouble("Intake/Target RPM", robot.intake.getTargetRPM());
+                    glassWindow.addBoolean("Intake/At Target", robot.intake.checkAcceptableError());
+                    glassWindow.addDouble("Indexer/RPM", robot.indexer.getRPM());
+                    glassWindow.addDouble("Indexer/Target RPM", robot.indexer.getTargetRPM());
+                    glassWindow.addBoolean("Indexer/At Target", robot.indexer.checkAcceptableError());
+                    glassWindow.addDouble("Shooter/RPM", robot.shooter.getRPM());
+                    glassWindow.addDouble("Shooter/Target RPM", robot.shooter.getTargetRPM());
+                    glassWindow.addBoolean("Shooter/At Target", robot.shooter.checkAcceptableError());
                 }
             }
 
         } finally {
-            if (glassWindow != null) {
+            if (Constants.DEBUG == true && glassWindow != null) {
                 glassWindow.stopServer();
             }   
         }

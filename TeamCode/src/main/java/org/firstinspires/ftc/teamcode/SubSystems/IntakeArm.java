@@ -44,6 +44,10 @@ public class IntakeArm {
         return radians * intakeArmConstants.RADIANS_TO_TICKS;
     }
 
+    public double getTargetPosition() {
+        return intakeArmPID.getTarget() / intakeArmConstants.RADIANS_TO_TICKS;
+    }
+
     public void periodic() {
         intakeArmPID.periodic();
     }
