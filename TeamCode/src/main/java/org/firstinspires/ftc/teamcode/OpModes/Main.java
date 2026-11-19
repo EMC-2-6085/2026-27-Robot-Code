@@ -17,7 +17,6 @@ import org.firstinspires.ftc.teamcode.Commands.ShootCommand;
 import org.firstinspires.ftc.teamcode.Commands.OhShitCommand;
 import java.util.List;
 
-
 @TeleOp(name = "Main TeleOp")
 public class Main extends LinearOpMode {
     
@@ -50,7 +49,7 @@ public class Main extends LinearOpMode {
         IntakeCommand lowerCommand = new IntakeCommand(robot.intakeArm, robot.intake, intakeArmConstants.ARM_DOWN_RADIANS);
         IntakeCommand inCommand = new IntakeCommand(robot.intakeArm, robot.intake,intakeArmConstants.ARM_IN_RADIANS);
         ShootCommand shootCommand = new ShootCommand(robot.mephi, robot.vision, robot.local, robot.shooter, robot.indexer, 80, true);
-        //true if red, false if blue
+        //true if on red alliance, false if on blue alliance
         ForwardIndexCommand forwardIndex = new ForwardIndexCommand(robot.indexer);
         BackwardIndexCommand backwardIndex = new BackwardIndexCommand(robot.indexer);
         OhShitCommand ohShitCommand = new OhShitCommand(robot.intake, robot.intakeArm, robot.indexer,robot.shooter);
@@ -67,8 +66,6 @@ public class Main extends LinearOpMode {
                 robot.indexer.periodic();
                 robot.shooter.periodic();
                 //robot.vision.update(); camera not wired yet
-                
-                robot.shooter.prepareShot();
 
                 currentHeading = robot.local.getHeading();
                 double turn = gamepad1.right_stick_x;
