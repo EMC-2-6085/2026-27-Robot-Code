@@ -19,7 +19,7 @@ public class Shooter {
             shooterConstants.SHOOTER_KP,
             shooterConstants.SHOOTER_KI,
             shooterConstants.SHOOTER_KD,
-            shooterConstants.SHOOTER_KV, // <-- Added Feedforward gain
+            shooterConstants.SHOOTER_KV,
             shooterConstants.INTEGRAL_LIMIT,
             shooterConstants.ACCEPTABLE_ERROR
         );

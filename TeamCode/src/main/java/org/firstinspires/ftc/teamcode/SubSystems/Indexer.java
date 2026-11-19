@@ -19,18 +19,18 @@ public class Indexer {
             indexerConstants.INDEXER_KP,
             indexerConstants.INDEXER_KI,
             indexerConstants.INDEXER_KD,
-            indexerConstants.INDEXER_KV, // <-- Added Feedforward gain
+            indexerConstants.INDEXER_KV,
             indexerConstants.INTEGRAL_LIMIT,
             indexerConstants.ACCEPTABLE_ERROR
         );
     }
 
     public void spinForward() {
-        setTargetRPM(indexerConstants.INDEXER_RPM);
+        setTargetRPM(-indexerConstants.INDEXER_RPM);
     }
 
     public void spinBackward() {
-        setTargetRPM(-indexerConstants.INDEXER_RPM);
+        setTargetRPM(indexerConstants.INDEXER_RPM);
     }
 
     public void stop() {

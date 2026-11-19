@@ -97,7 +97,10 @@ public class Main extends LinearOpMode {
                 robot.intake.periodic();
                 robot.intakeArm.periodic();
                 robot.indexer.periodic();
+                robot.shooter.periodic();
                 robot.vision.update();
+                
+                robot.shooter.prepareShot();
 
                 currentHeading = robot.local.getHeading();
                 double turn = gamepad1.right_stick_x;

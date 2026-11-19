@@ -36,14 +36,14 @@ public class Constants {
   }
 
   public static class intakeArmConstants {
-    public static final double ARM_KP = 0.0065; //temp
+    public static final double ARM_KP = 0.008; //temp
     public static final double ARM_KI = 0.0001; //temp
     public static final double ARM_KD = 0.0001125; //temp
     public static final double INTEGRAL_LIMIT = 200.0;
 
-    public static final double ARM_UP_RADIANS = 0;
+    public static final double ARM_UP_RADIANS = 3.14159;
     public static final double ARM_DOWN_RADIANS = 1.570795; //temp
-    public static final double ARM_IN_RADIANS = 3.14159; //temp
+    public static final double ARM_IN_RADIANS = 0.0; //temp
     public static final double ACCEPTABLE_ERROR = 1.0;
 
     public static final double RADIANS_TO_TICKS = 117.46;
@@ -75,13 +75,13 @@ public class Constants {
     public static final double SHOOT_DISTANCE = 1; //Meters temp
     public static final double[] CAMERA_OFFSET = {-0.08, 0.16}; //Meters from robot center to lens (x, y) temp
     public static final double ENCODER_CPR = 28;
-    public static final double SHOOTER_KP = 0.0032; //temp
+    public static final double SHOOTER_KP = 0.005; //temp
     public static final double SHOOTER_KI = 0.0; //temp
     public static final double SHOOTER_KD = 0.0; //temp
-    public static final double SHOOTER_KV = 0.000167;
+    public static final double SHOOTER_KV = 0.001;
     public static final double INTEGRAL_LIMIT = 0.0;
     public static final double ACCEPTABLE_ERROR = 50.0; //RPM temp
-    public static final double SHOOTER_RPM = 4000.0; //target RPM temp
+    public static final double SHOOTER_RPM = 6000.0; //target RPM temp
     public static final double UNLOAD_RPM = -500.0; //temp
   }
 
